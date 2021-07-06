@@ -9,6 +9,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import {useState} from "react";
 import HymnPage from "./HymnPage";
+import AddHymnPage from "./AddHymnPage";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
@@ -96,6 +97,9 @@ function App() {
         <Switch>
           <Route path="/hymn">
             <HymnPage/>
+          </Route>
+          <Route path="/add">
+            <AddHymnPage/>
           </Route>
           <Route path="/">
             <Home/>

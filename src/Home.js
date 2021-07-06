@@ -50,7 +50,7 @@ function Home() {
         <Paper className={classes.listContainer}>
           <List className={classes.list}>
             {hymnList.map((item,index) => (
-              <div>
+              <div key={item.id}>
                 <ListItem button component={Link} divider={hymnList[index+1]!== undefined} to={"/hymn"}>
                   <ListItemText primary={item.name}/>
                 </ListItem>
