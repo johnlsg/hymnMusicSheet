@@ -2,6 +2,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import abcjs from "abcjs";
 import {useEffect, useState} from "react";
 import db from "./firebase.config"
+import {useParams} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
     hymnPageRoot: {
@@ -14,15 +15,17 @@ const useStyles = makeStyles((theme) => ({
 
 const HymnPage = () => {
   const classes = useStyles()
+  let { id } = useParams();
   const [hymn, setHymn] = useState()
   // let abcString = "X:1\nT:Example\nK:Bb\nBcde|\n";
   useEffect(() => {
+    console.log(id)
     const fetchHymn = async ()=>{
-      let querySnapchot = await db.collection("hymns").get()
-      querySnapchot.forEach((doc) => {
-        console.log(doc.data())
-        let formattedDoc = {...doc.data(), musicABC:doc.data().musicABC.replaceAll("\\n","\n")}
-        setHymn(formattedDoc)
+      let ref = await db.collection("hymns").doc(id).get()
+      const data = ref.data()
+      setHymn({
+        name:data.name,
+        musicABC:data.musicABC.replaceAll("\\n","\n")
       })
     }
     fetchHymn()
@@ -30,11 +33,7 @@ const HymnPage = () => {
 
   useEffect(() => {
     if(hymn !== undefined) {
-      console.log(hymn)
-      let a = abcjs.renderAbc("musicSheet", hymn.musicABC);
-      if (!!a) {
-        console.log(a[0])
-      }
+      abcjs.renderAbc("musicSheet", hymn.musicABC);
     }
   }, [hymn])
   return (

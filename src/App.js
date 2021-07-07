@@ -95,10 +95,13 @@ function App() {
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
-          <Route path="/hymn">
+          <Route path="/hymn/:id">
             <HymnPage/>
           </Route>
           <Route path="/add">
+            <AddHymnPage/>
+          </Route>
+          <Route path="/edit/:id">
             <AddHymnPage/>
           </Route>
           <Route path="/">

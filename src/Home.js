@@ -2,9 +2,12 @@ import React, {useEffect, useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import db from "./firebase.config";
-import {List, ListItem, ListItemText, Paper} from "@material-ui/core";
+import {List, ListItem, ListItemSecondaryAction, ListItemText, Paper} from "@material-ui/core";
 import Divider from "@material-ui/core/Divider";
 import {Link} from "react-router-dom";
+import IconButton from "@material-ui/core/IconButton";
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 const useStyles = makeStyles((theme) => ({
   homeRoot: {
@@ -20,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     padding:"20px",
-    zIndex:"3"
+    marginTop:"30px"
   },
   list:{
     maxWidth:"500px",
@@ -28,6 +31,16 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
+const EditLinkBtn =React.forwardRef((props, ref) => (
+    <IconButton edge="end" aria-label="edit" ref={ref} {...props}>
+      <EditIcon />
+    </IconButton>
+))
+const DeleteLinkBtn =React.forwardRef((props, ref) => (
+  <IconButton edge="end" aria-label="delete" ref={ref} {...props}>
+    <DeleteIcon />
+  </IconButton>
+))
 function Home() {
   const classes = useStyles()
   const [hymnList, setHymnList] = useState([])
@@ -51,8 +64,12 @@ function Home() {
           <List className={classes.list}>
             {hymnList.map((item,index) => (
               <div key={item.id}>
-                <ListItem button component={Link} divider={hymnList[index+1]!== undefined} to={"/hymn"}>
+                <ListItem button component={Link} divider={hymnList[index+1]!== undefined} to={`/hymn/${item.id}`}>
                   <ListItemText primary={item.name}/>
+                  <ListItemSecondaryAction>
+                    <Link to={`/edit/${item.id}`} component={EditLinkBtn} />
+                    <Link to={`/delete/${item.id}`} component={DeleteLinkBtn} />
+                  </ListItemSecondaryAction>
                 </ListItem>
               </div>
             )
