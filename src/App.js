@@ -1,20 +1,23 @@
 import './App.css';
-import {BrowserRouter as Router, Route, Switch, Link} from "react-router-dom";
+import {Link, Route, Switch, useHistory} from "react-router-dom";
 import Home from "./Home";
-import {Drawer, IconButton, ListItem} from "@material-ui/core";
+import {Button, Drawer, IconButton, ListItem} from "@material-ui/core";
 import AppBar from '@material-ui/core/AppBar';
 import MenuIcon from "@material-ui/icons/Menu";
 import Typography from "@material-ui/core/Typography";
 import {makeStyles} from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
-import {useState} from "react";
+import React, {useEffect, useState} from "react";
 import HymnPage from "./HymnPage";
 import AddHymnPage from "./AddHymnPage";
+import DeleteHymnPage from "./DeleteHymnPage";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import AuthPage from "./AuthPage";
+import firebase from "firebase";
+import * as firebaseui from "firebaseui";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -36,8 +39,8 @@ const useStyles = makeStyles((theme) => ({
       //...theme.mixins.toolbar,
       justifyContent: 'flex-end',
     },
-    drawerContainer:{
-      minWidth:"300px"
+    drawerContainer: {
+      minWidth: "300px"
     }
   })
 )
@@ -46,21 +49,63 @@ function ListItemLink(props) {
   return <ListItem button component={Link} {...props} />;
 }
 
+export const AuthContext = React.createContext({});
+
 
 function App() {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [globalState, setGlobalState] = useState({
+    user:undefined
+  })
   const openDrawer = () => {
     setDrawerOpen(true)
   }
+
+
   const closeDrawer = () => {
     setDrawerOpen(false)
   }
 
+  const history = useHistory()
+  const handleLoginBtn = () => {
+    history.push('/login')
+  }
+  const handleLogoutBtn = ()=>{
+    firebase.auth().signOut()
+    setGlobalState({user:undefined})
+  }
+
+  const isLoggedIn = ()=>{
+    return globalState.user !== undefined
+  }
+
+  useEffect(() => {
+      const unregisterAuthStateListener = firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+          console.log("logged in")
+          console.log(user)
+          setGlobalState({
+            user:user
+          })
+        } else {
+          // User is signed out.
+          setGlobalState({
+            user:undefined
+          })
+          console.log("logged out")
+        }
+      }, function (error) {
+        console.log(error);
+      });
+      return ()=>{unregisterAuthStateListener()}
+    }, []
+  )
 
   return (
-    <Router>
-      <div>
+    <div>
+      <AuthContext.Provider value={{globalState: globalState, setGlobalState: setGlobalState}}>
+
         <div className={classes.appBarDiv}>
           <AppBar position={"static"} className={classes.appBar}>
             <Toolbar>
@@ -71,6 +116,11 @@ function App() {
               <Typography variant="h6" className={classes.title}>
                 Hymn Music Sheet
               </Typography>
+              {isLoggedIn()?(
+                <Button color="inherit" onClick={handleLogoutBtn}>Sign Out</Button>
+              ):(
+                <Button color="inherit" onClick={handleLoginBtn}>Sign In</Button>
+              )}
             </Toolbar>
           </AppBar>
         </div>
@@ -81,14 +131,18 @@ function App() {
                 <ChevronLeftIcon/>
               </IconButton>
             </div>
-            <Divider />
+            <Divider/>
             <List>
               <ListItemLink to="/">
-                <ListItemText primary="Home" />
+                <ListItemText primary="Home"/>
               </ListItemLink>
-              <ListItemLink to="/hymn">
-                <ListItemText primary="Hymn" />
-              </ListItemLink>
+              {
+                isLoggedIn()?(
+                  <ListItemLink to="/add">
+                    <ListItemText primary="Add Hymn"/>
+                  </ListItemLink>
+                ):null
+              }
             </List>
           </div>
         </Drawer>
@@ -104,12 +158,18 @@ function App() {
           <Route path="/edit/:id">
             <AddHymnPage/>
           </Route>
+          <Route path="/delete/:id">
+            <DeleteHymnPage/>
+          </Route>
+          <Route path="/login">
+            <AuthPage/>
+          </Route>
           <Route path="/">
             <Home/>
           </Route>
         </Switch>
-      </div>
-    </Router>
+      </AuthContext.Provider>
+    </div>
   );
 }
 

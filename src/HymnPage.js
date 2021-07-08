@@ -29,7 +29,7 @@ const HymnPage = () => {
       })
     }
     fetchHymn()
-  }, [])
+  }, [id])
 
   useEffect(() => {
     if(hymn !== undefined) {
