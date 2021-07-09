@@ -1,5 +1,6 @@
+import {useHistory, useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
-import {useParams, useHistory} from "react-router-dom";
+import {AuthContext} from "./App";
 import db from "./firebase.config";
 import {
   Button,
@@ -10,9 +11,8 @@ import {
   DialogTitle,
   Typography
 } from "@material-ui/core";
-import {AuthContext} from "./App";
 
-const DeleteHymnPage = (props)=>{
+const DeleteCategoryPage = (props)=>{
   let { id } = useParams();
   const history = useHistory()
   const { globalState, setGlobalState } = React.useContext(AuthContext);
@@ -24,7 +24,7 @@ const DeleteHymnPage = (props)=>{
   useEffect(()=>{
     const deleteData = async ()=>{
       try{
-        const ref = await db.collection('hymns').doc(id).delete()
+        const ref = await db.collection('hymnCategory').doc(id).delete()
         setIsSuccess(true)
       }catch (e) {
         console.error(e)
@@ -60,17 +60,17 @@ const DeleteHymnPage = (props)=>{
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Hymn Deletion</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Category Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             {
               isSuccess?(
                 <Typography>
-                  Hymn deleted successfully
+                  Category deleted successfully
                 </Typography>
               ):(
                 <Typography>
-                  Error deleting hymn
+                  Error deleting category
                 </Typography>
               )
             }
@@ -84,7 +84,6 @@ const DeleteHymnPage = (props)=>{
       </Dialog>
     </div>
   )
-
 }
 
-export default DeleteHymnPage
+export default DeleteCategoryPage

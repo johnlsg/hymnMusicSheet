@@ -1,7 +1,12 @@
+import {makeStyles} from "@material-ui/core/styles";
+import MuiAlert from "@material-ui/lab/Alert";
+import React, {useEffect, useState} from "react";
+import {useHistory, useParams} from "react-router-dom";
+import {AuthContext} from "./App";
+import db from "./firebase.config";
 import {
   Button,
-  Dialog,
-  DialogActions,
+  Dialog, DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
@@ -10,12 +15,7 @@ import {
   TextField,
   Typography
 } from "@material-ui/core";
-import MuiAlert from '@material-ui/lab/Alert';
-import {makeStyles} from "@material-ui/core/styles";
-import React, {useEffect, useState} from "react";
-import db from "./firebase.config";
-import {useHistory, useParams} from "react-router-dom";
-import {AuthContext} from "./App";
+
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -33,14 +33,12 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-const AddHymnPage = (props) => {
+const EditAddCategoryPage = (props)=>{
   let {id} = useParams();
   const classes = useStyles()
   const history = useHistory()
   const [mode, setMode] = useState("loading")
-  const [hymnID, setHymnID] = useState("")
-  // const [hymnName, setHymnName] = useState("")
-  const [hymnMusicABC, setHymnMusicABC] = useState("")
+  const [hymnCategory, setHymnCategory] = useState("")
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [alertOpen, setAlertOpen] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
@@ -67,25 +65,21 @@ const AddHymnPage = (props) => {
       history.push('/')
     }
   }, [])
+
   useEffect(() => {
     const fetchHymn = async () => {
-      const docRef = await db.collection('hymns').doc(id).get()
+      const docRef = await db.collection('hymnCategory').doc(id).get()
       const data = docRef.data()
-      if(data===undefined){
-        history.push('/')
-      }else if (!!data.musicABC) {
-        // setHymnName(data.name)
-        setHymnMusicABC(data.musicABC.replaceAll("\\n", "\n"))
+      if (!!data.categoryName) {
+        setHymnCategory(data.categoryName)
         setMode("edit")
       }
     }
     if (id !== undefined || !!id) {
-      setHymnID(id)
       fetchHymn()
     } else {
       setMode("add")
-      // setHymnName("")
-      setHymnMusicABC("")
+      setHymnCategory("")
     }
 
   }, [id])
@@ -95,16 +89,16 @@ const AddHymnPage = (props) => {
       let err = false
       if (mode === "add") {
         try {
-          const ref = await db.collection('hymns').add({musicABC: hymnMusicABC})
+          const ref = await db.collection('hymnCategory').add({categoryName: hymnCategory})
         } catch (e) {
           err = true
           console.error(e)
         }
       } else if (mode === "edit") {
         try {
-          const ref = await db.collection('hymns').doc(hymnID)
+          const ref = await db.collection('hymnCategory').doc(id)
           await ref.update({
-            musicABC: hymnMusicABC
+            categoryName: hymnCategory
           })
         } catch (e) {
           err = true
@@ -137,12 +131,9 @@ const AddHymnPage = (props) => {
             </Typography>
           ) : (
             <React.Fragment>
-              {/*<TextField id="hymnName" variant="filled" label="Hymn Name" value={hymnName} onChange={(e) => {*/}
-              {/*  setHymnName(e.target.value)*/}
-              {/*}}/>*/}
-              <TextField id="hymnMusicABC" multiline variant="filled" label="Hymn Music ABC Notation" fullWidth
-                         value={hymnMusicABC} onChange={(e) => {
-                setHymnMusicABC(e.target.value)
+              <TextField id="hymnCategoryName" variant="filled" label="Hymn Category Name"
+                         value={hymnCategory} onChange={(e) => {
+                setHymnCategory(e.target.value)
               }}/>
               <Button variant="contained" onClick={openConfirmDialog}>Submit</Button>
             </React.Fragment>
@@ -185,4 +176,4 @@ const AddHymnPage = (props) => {
   )
 }
 
-export default AddHymnPage
+export default EditAddCategoryPage

@@ -1,6 +1,6 @@
 import './App.css';
 import {Link, Route, Switch, useHistory} from "react-router-dom";
-import Home from "./Home";
+import ListHymnPage from "./ListHymnPage";
 import {Button, Drawer, IconButton, ListItem} from "@material-ui/core";
 import AppBar from '@material-ui/core/AppBar';
 import MenuIcon from "@material-ui/icons/Menu";
@@ -18,6 +18,10 @@ import ListItemText from '@material-ui/core/ListItemText';
 import AuthPage from "./AuthPage";
 import firebase from "firebase";
 import * as firebaseui from "firebaseui";
+import EditAddCategoryPage from "./EditAddCategoryPage";
+import AppNavDrawer from "./AppNavDrawer";
+import ListCategoryPage from "./ListCategoryPage";
+import DeleteCategoryPage from "./DeleteCategoryPage";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -31,23 +35,11 @@ const useStyles = makeStyles((theme) => ({
     title: {
       flexGrow: 1,
     },
-    drawerHeader: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: theme.spacing(0, 1),
-      // necessary for content to be below app bar
-      //...theme.mixins.toolbar,
-      justifyContent: 'flex-end',
-    },
-    drawerContainer: {
-      minWidth: "300px"
-    }
+
   })
 )
 
-function ListItemLink(props) {
-  return <ListItem button component={Link} {...props} />;
-}
+
 
 export const AuthContext = React.createContext({});
 
@@ -96,7 +88,7 @@ function App() {
           console.log("logged out")
         }
       }, function (error) {
-        console.log(error);
+        console.error(error);
       });
       return ()=>{unregisterAuthStateListener()}
     }, []
@@ -124,28 +116,7 @@ function App() {
             </Toolbar>
           </AppBar>
         </div>
-        <Drawer anchor={"left"} open={drawerOpen} onClose={closeDrawer}>
-          <div className={classes.drawerContainer}>
-            <div className={classes.drawerHeader}>
-              <IconButton onClick={closeDrawer}>
-                <ChevronLeftIcon/>
-              </IconButton>
-            </div>
-            <Divider/>
-            <List>
-              <ListItemLink to="/">
-                <ListItemText primary="Home"/>
-              </ListItemLink>
-              {
-                isLoggedIn()?(
-                  <ListItemLink to="/add">
-                    <ListItemText primary="Add Hymn"/>
-                  </ListItemLink>
-                ):null
-              }
-            </List>
-          </div>
-        </Drawer>
+        <AppNavDrawer drawerOpen={drawerOpen} closeDrawer={closeDrawer} isLoggedIn={isLoggedIn}/>
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
@@ -154,6 +125,18 @@ function App() {
           </Route>
           <Route path="/add">
             <AddHymnPage/>
+          </Route>
+          <Route path="/categories">
+            <ListCategoryPage/>
+          </Route>
+          <Route path="/addCategory">
+            <EditAddCategoryPage/>
+          </Route>
+          <Route path="/editCategory/:id">
+            <EditAddCategoryPage/>
+          </Route>
+          <Route path="/deleteCategory/:id">
+            <DeleteCategoryPage/>
           </Route>
           <Route path="/edit/:id">
             <AddHymnPage/>
@@ -165,7 +148,8 @@ function App() {
             <AuthPage/>
           </Route>
           <Route path="/">
-            <Home/>
+            <ListHymnPage/>
+            <ListCategoryPage/>
           </Route>
         </Switch>
       </AuthContext.Provider>

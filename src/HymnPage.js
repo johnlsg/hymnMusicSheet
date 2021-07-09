@@ -3,12 +3,17 @@ import abcjs from "abcjs";
 import {useEffect, useState} from "react";
 import db from "./firebase.config"
 import {useParams} from "react-router-dom";
+import 'abcjs/abcjs-audio.css';
 
 const useStyles = makeStyles((theme) => ({
     hymnPageRoot: {
       display: "flex",
       flexDirection: "column",
-      alignItems: "center"
+      alignItems: "center",
+      paddingTop:"50px"
+    },
+    playerContainer:{
+      minWidth:"70%"
     }
   })
 )
@@ -33,12 +38,40 @@ const HymnPage = () => {
 
   useEffect(() => {
     if(hymn !== undefined) {
-      abcjs.renderAbc("musicSheet", hymn.musicABC);
+      let visualObj = abcjs.renderAbc("musicSheet", hymn.musicABC);
+      console.log(visualObj[0])
+      //player control
+      const synthControl = new abcjs.synth.SynthController();
+      let cursorControl = {}
+      synthControl.load("#player",
+        cursorControl,
+        {
+          // displayLoop: true,
+          displayRestart: true,
+          displayPlay: true,
+          displayProgress: true,
+          // displayWarp: true
+        }
+      );
+
+      //create synthesizer
+      let synth = new abcjs.synth.CreateSynth();
+      let myContext = new AudioContext();
+      synth.init({ visualObj: visualObj[0] }).then(function () {
+        synthControl.setTune(visualObj[0], false, {}).then(function () {
+          console.log("Audio successfully loaded.")
+        }).catch(function (error) {
+          console.warn("Audio problem:", error);
+        });
+      }).catch(function (error) {
+        console.warn("Audio problem:", error);
+      });
     }
   }, [hymn])
   return (
     <div className={classes.hymnPageRoot}>
-      <span>{!!hymn?hymn.name:"Loading...."}</span>
+      {!!hymn?null:<span>Loading....</span>}
+      <div id={"player"} className={classes.playerContainer}></div>
       <div id={"musicSheet"}></div>
     </div>
   )

@@ -9,6 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import {AuthContext} from "./App";
+import abcjs from "abcjs";
 
 const useStyles = makeStyles((theme) => ({
   homeRoot: {
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 
-function Home() {
+function ListHymnPage() {
   const classes = useStyles()
   const history = useHistory()
   const [hymnList, setHymnList] = useState([])
@@ -44,7 +45,15 @@ function Home() {
       let querySnapchot = await db.collection("hymns").orderBy('name').limit(25).get()
       let tmpArr = []
       querySnapchot.forEach((doc) => {
-        tmpArr.push({...doc.data(), id:doc.id})
+        const data = doc.data()
+        const parsed = abcjs.renderAbc("*", data.musicABC);
+        if(!!parsed && !!parsed[0]){
+          tmpArr.push({
+            musicABC:data.musicABC,
+            id:doc.id,
+            name:!!parsed[0].metaText&&!!parsed[0].metaText.title?parsed[0].metaText.title:doc.id
+          })
+        }
       })
       setHymnList(tmpArr)
     }
@@ -83,4 +92,4 @@ function Home() {
   )
 }
 
-export default Home
+export default ListHymnPage
