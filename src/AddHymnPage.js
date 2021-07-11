@@ -144,6 +144,7 @@ const AddHymnPage = (props) => {
                          value={hymnMusicABC} onChange={(e) => {
                 setHymnMusicABC(e.target.value)
               }}/>
+
               <Button variant="contained" onClick={openConfirmDialog}>Submit</Button>
             </React.Fragment>
           )

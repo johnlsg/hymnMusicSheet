@@ -6,7 +6,8 @@ import {AuthContext} from "./App";
 import db from "./firebase.config";
 import {
   Button,
-  Dialog, DialogActions,
+  Dialog,
+  DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
@@ -15,6 +16,7 @@ import {
   TextField,
   Typography
 } from "@material-ui/core";
+import {Autocomplete} from "@material-ui/lab";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -33,7 +35,7 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-const EditAddCategoryPage = (props)=>{
+const EditAddCategoryPage = (props) => {
   let {id} = useParams();
   const classes = useStyles()
   const history = useHistory()
@@ -105,9 +107,9 @@ const EditAddCategoryPage = (props)=>{
           console.error(e)
         }
       }
-      if(err){
+      if (err) {
         openAlert(false)
-      }else{
+      } else {
         openAlert(true)
       }
     }
@@ -135,13 +137,24 @@ const EditAddCategoryPage = (props)=>{
                          value={hymnCategory} onChange={(e) => {
                 setHymnCategory(e.target.value)
               }}/>
+              <Autocomplete
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="filled"
+                    label="test"
+                    placeholder="Favorites"
+                  />
+                )}
+                options={['abc','def']}
+              />
               <Button variant="contained" onClick={openConfirmDialog}>Submit</Button>
             </React.Fragment>
           )
         }
       </Paper>
       <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleAlertClose}>
-        {isSuccess===true ? (
+        {isSuccess === true ? (
           <Alert onClose={handleAlertClose} severity="success">
             Successful
           </Alert>

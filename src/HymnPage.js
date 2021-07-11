@@ -10,7 +10,8 @@ const useStyles = makeStyles((theme) => ({
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      paddingTop:"50px"
+      paddingTop:"50px",
+      overflow:"auto"
     },
     playerContainer:{
       minWidth:"70%"
@@ -38,7 +39,7 @@ const HymnPage = () => {
 
   useEffect(() => {
     if(hymn !== undefined) {
-      let visualObj = abcjs.renderAbc("musicSheet", hymn.musicABC);
+      let visualObj = abcjs.renderAbc("musicSheet", hymn.musicABC, {responsive:"resize"});
       console.log(visualObj[0])
       //player control
       const synthControl = new abcjs.synth.SynthController();
