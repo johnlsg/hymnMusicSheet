@@ -30,6 +30,9 @@ const useStyles = makeStyles((theme) => ({
   list:{
     maxWidth:"500px",
     width:"100%",
+  },
+  titleContainer:{
+    marginTop:"30px"
   }
 }))
 
@@ -38,6 +41,7 @@ function ListHymnPage(props) {
   const classes = useStyles()
   const history = useHistory()
   const [hymnList, setHymnList] = useState([])
+  const [categoryName, setCategoryName] = useState()
   const { globalState, setGlobalState } = React.useContext(GlobalContext);
   const {filterCategory} = props
 
@@ -46,6 +50,8 @@ function ListHymnPage(props) {
       let querySnapshot
       if(!!filterCategory){
         querySnapshot = await db.collection('hymns').where("category","==",filterCategory).get()
+        let categoryMap = (await db.collection("hymnCategory").doc('categories').get()).data().categoryMap
+        setCategoryName(categoryMap[filterCategory].categoryName)
       }else{
         querySnapshot = await db.collection("hymns").get()
       }
@@ -67,8 +73,8 @@ function ListHymnPage(props) {
   }, [])
   return (
     <div className={classes.homeRoot}>
-        <div>
-          <Typography variant={"h3"}>Hymn List</Typography>
+        <div className={classes.titleContainer}>
+          <Typography variant={"h3"}>{(!!categoryName)?`Category - ${categoryName}`:"Hymn List"}</Typography>
         </div>
         <Paper className={classes.listContainer}>
           <List className={classes.list}>

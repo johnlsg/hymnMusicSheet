@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
   list:{
     maxWidth:"500px",
     width:"100%",
+  },
+  titleContainer:{
+    marginTop:"30px"
   }
 }))
 
@@ -55,7 +58,7 @@ const ListCategoryPage = (props)=>{
   }, [])
   return (
     <div className={classes.homeRoot}>
-      <div>
+      <div className={classes.titleContainer}>
         <Typography variant={"h3"}>Hymn Categories</Typography>
       </div>
       <Paper className={classes.listContainer}>

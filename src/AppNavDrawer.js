@@ -3,10 +3,11 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
 import ListItemText from "@material-ui/core/ListItemText";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {makeStyles} from "@material-ui/core/styles";
 import {GlobalContext} from "./App";
+import db from "./firebase.config";
 
 function ListItemLink(props) {
   return <ListItem button component={Link} {...props} />;
@@ -31,6 +32,24 @@ const AppNavDrawer = (props)=>{
   const classes = useStyles()
   const {drawerOpen, closeDrawer, isLoggedIn} = props
   const {globalState, setGlobalState} = React.useContext(GlobalContext);
+  // const [hymnCategoryList, setHymnCategoryList] = useState([])
+
+  // useEffect(() => {
+  //   const fetchHymnCategory = async () => {
+  //     let categoryMap = (await db.collection("hymnCategory").doc('categories').get()).data().categoryMap
+  //     let tmpArr = []
+  //
+  //     for(let key of Object.keys(categoryMap)) {
+  //       tmpArr.push({
+  //         categoryName:categoryMap[key].categoryName,
+  //         id:key
+  //       })
+  //     }
+  //     setHymnCategoryList(tmpArr)
+  //   }
+  //   fetchHymnCategory()
+  // }, [])
+
   return (
     <Drawer anchor={"left"} open={drawerOpen} onClose={closeDrawer}>
       <div className={classes.drawerContainer}>
