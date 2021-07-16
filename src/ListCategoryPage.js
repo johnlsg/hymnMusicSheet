@@ -9,6 +9,7 @@ import {List, ListItem, ListItemSecondaryAction, ListItemText, Paper} from "@mat
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
+import {isLoggedIn} from "./utils";
 
 const useStyles = makeStyles((theme) => ({
   homeRoot: {
@@ -68,7 +69,7 @@ const ListCategoryPage = (props)=>{
                 <ListItem button divider={hymnCategoryList[index+1]!== undefined} onClick={()=>{history.push(`/category/${item.id}`)}}>
                   <ListItemText primary={item.categoryName}/>
                   {
-                    globalState.user!==undefined?(
+                    isLoggedIn(globalState)?(
                       <ListItemSecondaryAction>
                         <IconButton edge="end" aria-label="edit" onClick={()=>{history.push(`/editCategory/${item.id}`)}}>
                           <EditIcon />

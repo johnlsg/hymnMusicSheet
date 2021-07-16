@@ -151,7 +151,7 @@ const EditAddCategoryPage = (props) => {
                          value={hymnCategoryName} onChange={(e) => {
                 setHymnCategoryName(e.target.value)
               }}/>
-              <Button variant="contained" onClick={openConfirmDialog}>Submit</Button>
+              <Button variant="contained" onClick={handleSubmit}>Submit</Button>
             </React.Fragment>
           )
         }
@@ -167,27 +167,7 @@ const EditAddCategoryPage = (props) => {
           </Alert>
         )}
       </Snackbar>
-      <Dialog
-        open={confirmDialogOpen}
-        onClose={handleConfirmDialogClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">Confirm Submit</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Confirm to submit ?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleConfirmDialogClose} color="primary">
-            No
-          </Button>
-          <Button onClick={confirmAndSubmit} color="primary" autoFocus>
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
+
     </form>
   )
 }

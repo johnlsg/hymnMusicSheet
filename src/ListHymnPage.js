@@ -10,6 +10,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import {GlobalContext} from "./App";
 import abcjs from "abcjs";
+import {isLoggedIn} from "./utils";
 
 const useStyles = makeStyles((theme) => ({
   homeRoot: {
@@ -74,16 +75,17 @@ function ListHymnPage(props) {
   return (
     <div className={classes.homeRoot}>
         <div className={classes.titleContainer}>
-          <Typography variant={"h3"}>{(!!categoryName)?`Category - ${categoryName}`:"Hymn List"}</Typography>
+          <Typography variant={"h3"}>{(!!categoryName)?categoryName:""}</Typography>
         </div>
         <Paper className={classes.listContainer}>
           <List className={classes.list}>
+            {hymnList.length ===0 ? "It is empty here":null}
             {hymnList.map((item,index) => (
               <div key={item.id}>
                 <ListItem button divider={hymnList[index+1]!== undefined} onClick={()=>{history.push(`/hymn/${item.id}`)}}>
                   <ListItemText primary={item.name}/>
                   {
-                    globalState.user!==undefined?(
+                    isLoggedIn(globalState)?(
                       <ListItemSecondaryAction>
                         <IconButton edge="end" aria-label="edit" onClick={()=>{history.push(`/edit/${item.id}`)}}>
                           <EditIcon />

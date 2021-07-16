@@ -35,8 +35,11 @@ const useStyles = makeStyles((theme) => ({
       marginRight: theme.spacing(2),
     },
     title: {
-      flexGrow: 1,
+      cursor:"pointer"
     },
+    spacer:{
+      flexGrow: 1,
+    }
 
   })
 )
@@ -111,9 +114,10 @@ function App() {
               <IconButton edge="start" color="inherit" aria-label="menu" onClick={openDrawer}>
                 <MenuIcon/>
               </IconButton>
-              <Typography variant="h6" className={classes.title}>
+              <Typography variant="h6" className={classes.title} onClick={()=>{history.push('/')}}>
                 Hymn Music Sheet
               </Typography>
+              <div className={classes.spacer}></div>
               {isLoggedIn(globalState)?(
                 <Button color="inherit" onClick={handleLogoutBtn}>Sign Out</Button>
               ):(
@@ -157,7 +161,6 @@ function App() {
             <AuthPage/>
           </Route>
           <Route path="/">
-            <ListHymnPage/>
             <ListCategoryPage/>
           </Route>
         </Switch>

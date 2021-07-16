@@ -96,18 +96,6 @@ const EditAddHymnPage = (props) => {
         setMode("edit")
       }
     }
-    if (id !== undefined || !!id) {
-      setHymnID(id)
-      fetchHymn()
-    } else {
-      setMode("add")
-      // setHymnName("")
-      setHymnMusicABC("")
-    }
-
-  }, [id])
-
-  useEffect(() => {
     const fetchCategory = async () => {
       const ref = await db.collection('hymnCategory').doc('categories').get()
       const data = ref.data().categoryMap
@@ -116,9 +104,23 @@ const EditAddHymnPage = (props) => {
         categoryArr.push({id: key, name: data[key].categoryName})
       }
       setCategoryList(categoryArr)
+      if (id !== undefined || !!id) {
+        setHymnID(id)
+        await fetchHymn()
+      } else {
+        setMode("add")
+        // setHymnName("")
+        setHymnMusicABC("")
+      }
+      if(!!oldCategory && oldCategory!==''&&data[oldCategory] === undefined){
+        setCategorySelected('')
+      }
     }
     fetchCategory()
-  }, [])
+
+
+  }, [id])
+
 
   const handleSubmit = (e) => {
     const submitData = async () => {
@@ -226,11 +228,11 @@ const EditAddHymnPage = (props) => {
               {/*<TextField id="hymnName" variant="filled" label="Hymn Name" value={hymnName} onChange={(e) => {*/}
               {/*  setHymnName(e.target.value)*/}
               {/*}}/>*/}
-              <TextField id="hymnMusicABC" multiline variant="filled" label="Hymn Music ABC Notation" fullWidth
+              <TextField required id="hymnMusicABC" multiline variant="filled" label="Hymn Music ABC Notation" fullWidth
                          value={hymnMusicABC} onChange={(e) => {
                 setHymnMusicABC(e.target.value)
               }}/>
-              <FormControl variant="filled" className={classes.selectControl}>
+              <FormControl required variant="filled" className={classes.selectControl}>
                 <InputLabel id="category-select-label">Category</InputLabel>
                 <Select
                   labelId="category-select-label"
@@ -251,7 +253,7 @@ const EditAddHymnPage = (props) => {
                   }
                 </Select>
               </FormControl>
-              <Button variant="contained" onClick={openConfirmDialog}>Submit</Button>
+              <Button variant="contained" onClick={handleSubmit}>Submit</Button>
             </React.Fragment>
           )
         }

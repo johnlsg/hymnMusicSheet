@@ -22,43 +22,70 @@ const DeleteHymnPage = (props)=>{
       history.push('/login')
     }
   }, [globalState])
-  useEffect(()=>{
+
+
+  const doDelete = ()=>{
     const deleteData = async ()=>{
+      console.log('fake delete')
       try{
-        const ref = await db.collection('hymns').doc(id).delete()
+        await db.runTransaction(async (transaction)=>{
+          let categoryID = (await transaction.get(db.collection('hymns').doc(id))).data().category
+          let categoryMapData = (await transaction.get(db.collection('hymnCategory').doc('categories'))).data().categoryMap
+          let updateMap = {}
+
+          //update old category content
+          if (categoryMapData[categoryID] !== undefined) {
+            let oldCategoryHymns = categoryMapData[categoryID].categoryContent
+            for (let i = 0; i < oldCategoryHymns.length; i++) {
+              if (oldCategoryHymns[i].hymnID === id) {
+                oldCategoryHymns.splice(i, 1)
+                break
+              }
+            }
+            updateMap[`categoryMap.${categoryID}.categoryContent`] = oldCategoryHymns
+          }
+          transaction.update(db.collection('hymnCategory').doc('categories'), updateMap)
+        })
         setIsSuccess(true)
       }catch (e) {
         console.error(e)
         setIsSuccess(false)
       }
-      openConfirmDialog()
+      openNotifyDialog()
     }
 
     if (isLoggedIn(globalState)) {
       deleteData()
     }
-  },[id])
+  }
+
 
   const redirectHome = ()=>{
     history.push('/')
   }
 
-  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const [notifyDialogOpen, setNotifyDialogOpen] = useState(false)
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(true)
   const [isSuccess, setIsSuccess] = useState(false)
+  const handleNotifyDialogClose = (e)=>{
+    setNotifyDialogOpen(false)
+    redirectHome()
+  }
+
+  const openNotifyDialog = (e)=>{
+    setNotifyDialogOpen(true)
+  }
+
   const handleConfirmDialogClose = (e)=>{
     setConfirmDialogOpen(false)
     redirectHome()
   }
 
-  const openConfirmDialog = (e)=>{
-    setConfirmDialogOpen(true)
-  }
-
   return (
     <div>
       <Dialog
-        open={confirmDialogOpen}
-        onClose={handleConfirmDialogClose}
+        open={notifyDialogOpen}
+        onClose={handleNotifyDialogClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -79,8 +106,30 @@ const DeleteHymnPage = (props)=>{
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleConfirmDialogClose} color="primary">
+          <Button onClick={handleNotifyDialogClose} color="primary">
             Okay
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={confirmDialogOpen}
+        onClose={handleConfirmDialogClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Confirm to delete ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={redirectHome} color="primary">
+            No
+          </Button>
+          <Button onClick={doDelete} color="primary" autoFocus>
+            Confirm
           </Button>
         </DialogActions>
       </Dialog>
