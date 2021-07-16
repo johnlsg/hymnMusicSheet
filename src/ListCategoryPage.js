@@ -1,7 +1,7 @@
 import {makeStyles} from "@material-ui/core/styles";
 import {useHistory} from "react-router-dom";
 import React, {useEffect, useState} from "react";
-import {AuthContext} from "./App";
+import {GlobalContext} from "./App";
 import db from "./firebase.config";
 import abcjs from "abcjs";
 import Typography from "@material-ui/core/Typography";
@@ -36,19 +36,19 @@ const ListCategoryPage = (props)=>{
   const classes = useStyles()
   const history = useHistory()
   const [hymnCategoryList, setHymnCategoryList] = useState([])
-  const { globalState, setGlobalState } = React.useContext(AuthContext);
+  const { globalState, setGlobalState } = React.useContext(GlobalContext);
 
   useEffect(() => {
     const fetchHymnCategory = async () => {
-      let querySnapchot = await db.collection("hymnCategory").orderBy('categoryName').limit(25).get()
+      let categoryMap = (await db.collection("hymnCategory").doc('categories').get()).data().categoryMap
       let tmpArr = []
-      querySnapchot.forEach((doc) => {
-        const data = doc.data()
+
+      for(let key of Object.keys(categoryMap)) {
           tmpArr.push({
-            categoryName:data.categoryName,
-            id:doc.id
+            categoryName:categoryMap[key].categoryName,
+            id:key
           })
-      })
+      }
       setHymnCategoryList(tmpArr)
     }
     fetchHymnCategory()
@@ -62,7 +62,7 @@ const ListCategoryPage = (props)=>{
         <List className={classes.list}>
           {hymnCategoryList.map((item,index) => (
               <div key={item.id}>
-                <ListItem button divider={hymnCategoryList[index+1]!== undefined}>
+                <ListItem button divider={hymnCategoryList[index+1]!== undefined} onClick={()=>{history.push(`/category/${item.id}`)}}>
                   <ListItemText primary={item.categoryName}/>
                   {
                     globalState.user!==undefined?(

@@ -6,6 +6,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import React from "react";
 import {Link} from "react-router-dom";
 import {makeStyles} from "@material-ui/core/styles";
+import {GlobalContext} from "./App";
 
 function ListItemLink(props) {
   return <ListItem button component={Link} {...props} />;
@@ -29,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
 const AppNavDrawer = (props)=>{
   const classes = useStyles()
   const {drawerOpen, closeDrawer, isLoggedIn} = props
+  const {globalState, setGlobalState} = React.useContext(GlobalContext);
   return (
     <Drawer anchor={"left"} open={drawerOpen} onClose={closeDrawer}>
       <div className={classes.drawerContainer}>
@@ -43,7 +45,7 @@ const AppNavDrawer = (props)=>{
             <ListItemText primary="Home"/>
           </ListItemLink>
           {
-            isLoggedIn()?(
+            isLoggedIn(globalState)?(
               <React.Fragment>
                 <ListItemLink to="/add">
                   <ListItemText primary="Add Hymn"/>

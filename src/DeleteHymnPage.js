@@ -10,17 +10,18 @@ import {
   DialogTitle,
   Typography
 } from "@material-ui/core";
-import {AuthContext} from "./App";
+import {GlobalContext} from "./App";
+import {isLoggedIn, isLoggedOut} from "./utils";
 
 const DeleteHymnPage = (props)=>{
   let { id } = useParams();
   const history = useHistory()
-  const { globalState, setGlobalState } = React.useContext(AuthContext);
-  useEffect(()=>{
-    if(globalState.user===undefined){
-      history.push('/')
+  const { globalState, setGlobalState } = React.useContext(GlobalContext);
+  useEffect(() => {
+    if (isLoggedOut(globalState)) {
+      history.push('/login')
     }
-  },[])
+  }, [globalState])
   useEffect(()=>{
     const deleteData = async ()=>{
       try{
@@ -32,7 +33,8 @@ const DeleteHymnPage = (props)=>{
       }
       openConfirmDialog()
     }
-    if(globalState.user!==undefined){
+
+    if (isLoggedIn(globalState)) {
       deleteData()
     }
   },[id])

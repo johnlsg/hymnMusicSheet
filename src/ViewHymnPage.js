@@ -11,15 +11,19 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: "column",
       alignItems: "center",
       paddingTop:"50px",
-      overflow:"auto"
+      overflow:"auto",
+
     },
     playerContainer:{
       minWidth:"70%"
-    }
+    },
+  sheetContainer:{
+      maxWidth:"70%"
+  }
   })
 )
 
-const HymnPage = () => {
+const ViewHymnPage = () => {
   const classes = useStyles()
   let { id } = useParams();
   const [hymn, setHymn] = useState()
@@ -73,8 +77,8 @@ const HymnPage = () => {
     <div className={classes.hymnPageRoot}>
       {!!hymn?null:<span>Loading....</span>}
       <div id={"player"} className={classes.playerContainer}></div>
-      <div id={"musicSheet"}></div>
+      <div id={"musicSheet"} className={classes.sheetContainer}></div>
     </div>
   )
 }
-export default HymnPage
+export default ViewHymnPage

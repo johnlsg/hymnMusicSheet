@@ -2,7 +2,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import MuiAlert from "@material-ui/lab/Alert";
 import React, {useEffect, useState} from "react";
 import {useHistory, useParams} from "react-router-dom";
-import {AuthContext} from "./App";
+import {GlobalContext} from "./App";
 import db from "./firebase.config";
 import {
   Button,
@@ -16,7 +16,7 @@ import {
   TextField,
   Typography
 } from "@material-ui/core";
-import {Autocomplete} from "@material-ui/lab";
+import {generateID, isLoggedOut} from "./utils";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -40,11 +40,11 @@ const EditAddCategoryPage = (props) => {
   const classes = useStyles()
   const history = useHistory()
   const [mode, setMode] = useState("loading")
-  const [hymnCategory, setHymnCategory] = useState("")
+  const [hymnCategoryName, setHymnCategoryName] = useState("")
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [alertOpen, setAlertOpen] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const {globalState, setGlobalState} = React.useContext(AuthContext);
+  const {globalState, setGlobalState} = React.useContext(GlobalContext);
   const handleConfirmDialogClose = (e) => {
     setConfirmDialogOpen(false)
   }
@@ -63,25 +63,31 @@ const EditAddCategoryPage = (props) => {
   }
 
   useEffect(() => {
-    if (globalState.user === undefined) {
-      history.push('/')
+    if (isLoggedOut(globalState)) {
+      history.push('/login')
     }
-  }, [])
+  }, [globalState])
 
   useEffect(() => {
-    const fetchHymn = async () => {
-      const docRef = await db.collection('hymnCategory').doc(id).get()
-      const data = docRef.data()
-      if (!!data.categoryName) {
-        setHymnCategory(data.categoryName)
-        setMode("edit")
+    const fetchHymnCategory = async () => {
+      const docRef = await db.collection('hymnCategory').doc('categories').get()
+      let data = docRef.data()
+      data = data.categoryMap
+      if(data[id] !== undefined){
+        data = data[id]
+        setHymnCategoryName(data.categoryName)
+        console.log("dsdssds")
+        console.log(data)
+      }else{
+        history.push('/error')
       }
+      setMode("edit")
     }
     if (id !== undefined || !!id) {
-      fetchHymn()
+      fetchHymnCategory()
     } else {
       setMode("add")
-      setHymnCategory("")
+      setHymnCategoryName("")
     }
 
   }, [id])
@@ -89,19 +95,27 @@ const EditAddCategoryPage = (props) => {
   const handleSubmit = (e) => {
     const submitData = async () => {
       let err = false
+      let transaction_ref = db.batch()
       if (mode === "add") {
         try {
-          const ref = await db.collection('hymnCategory').add({categoryName: hymnCategory})
+          const ref = db.collection('hymnCategory').doc('categories')
+          let tmpMap = {}
+          const newID = generateID()
+          tmpMap[`categoryMap.${newID}.categoryName`] = hymnCategoryName
+          tmpMap[`categoryMap.${newID}.categoryContent`] = []
+          transaction_ref.update(ref, tmpMap)
+          await transaction_ref.commit(tmpMap)
         } catch (e) {
           err = true
           console.error(e)
         }
       } else if (mode === "edit") {
         try {
-          const ref = await db.collection('hymnCategory').doc(id)
-          await ref.update({
-            categoryName: hymnCategory
-          })
+          const ref = db.collection('hymnCategory').doc('categories')
+          let tmpMap = {}
+          tmpMap[`categoryMap.${id}.categoryName`] = hymnCategoryName
+          transaction_ref.update(ref, tmpMap)
+          await transaction_ref.commit(tmpMap)
         } catch (e) {
           err = true
           console.error(e)
@@ -134,20 +148,9 @@ const EditAddCategoryPage = (props) => {
           ) : (
             <React.Fragment>
               <TextField id="hymnCategoryName" variant="filled" label="Hymn Category Name"
-                         value={hymnCategory} onChange={(e) => {
-                setHymnCategory(e.target.value)
+                         value={hymnCategoryName} onChange={(e) => {
+                setHymnCategoryName(e.target.value)
               }}/>
-              <Autocomplete
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="filled"
-                    label="test"
-                    placeholder="Favorites"
-                  />
-                )}
-                options={['abc','def']}
-              />
               <Button variant="contained" onClick={openConfirmDialog}>Submit</Button>
             </React.Fragment>
           )

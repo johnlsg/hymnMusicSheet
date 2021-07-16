@@ -3,7 +3,7 @@ import firebase from "firebase";
 import * as firebaseui from "firebaseui";
 import {makeStyles} from "@material-ui/core/styles";
 import 'firebaseui/dist/firebaseui.css'
-import {AuthContext} from "./App";
+import {GlobalContext} from "./App";
 
 const useStyles = makeStyles((theme) => ({
   authContainerRoot: {
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const AuthPage = (props) => {
-  const { globalState, setGlobalState } = React.useContext(AuthContext);
+  const { globalState, setGlobalState } = React.useContext(GlobalContext);
   const classes = useStyles()
   useEffect(() => {
       const unregisterAuthStateListener = firebase.auth().onAuthStateChanged(function (user) {

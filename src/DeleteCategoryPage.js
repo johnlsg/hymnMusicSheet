@@ -1,6 +1,6 @@
 import {useHistory, useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
-import {AuthContext} from "./App";
+import {GlobalContext} from "./App";
 import db from "./firebase.config";
 import {
   Button,
@@ -11,14 +11,15 @@ import {
   DialogTitle,
   Typography
 } from "@material-ui/core";
+import {isLoggedIn, isLoggedOut} from "./utils";
 
 const DeleteCategoryPage = (props)=>{
   let { id } = useParams();
   const history = useHistory()
-  const { globalState, setGlobalState } = React.useContext(AuthContext);
+  const { globalState, setGlobalState } = React.useContext(GlobalContext);
   useEffect(()=>{
-    if(globalState.user===undefined){
-      history.push('/')
+    if(isLoggedOut(globalState)){
+      history.push('/login')
     }
   },[])
   useEffect(()=>{
@@ -32,7 +33,7 @@ const DeleteCategoryPage = (props)=>{
       }
       openConfirmDialog()
     }
-    if(globalState.user!==undefined){
+    if(isLoggedIn(globalState)){
       deleteData()
     }
   },[id])

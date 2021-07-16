@@ -8,8 +8,8 @@ import Typography from "@material-ui/core/Typography";
 import {makeStyles} from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import React, {useEffect, useState} from "react";
-import HymnPage from "./HymnPage";
-import AddHymnPage from "./AddHymnPage";
+import ViewHymnPage from "./ViewHymnPage";
+import EditAddHymnPage from "./EditAddHymnPage";
 import DeleteHymnPage from "./DeleteHymnPage";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import List from "@material-ui/core/List";
@@ -22,6 +22,8 @@ import EditAddCategoryPage from "./EditAddCategoryPage";
 import AppNavDrawer from "./AppNavDrawer";
 import ListCategoryPage from "./ListCategoryPage";
 import DeleteCategoryPage from "./DeleteCategoryPage";
+import {isLoggedIn} from "./utils";
+import ViewCategoryPage from "./ViewCategoryPage";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -41,15 +43,14 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export const AuthContext = React.createContext({});
+const initialGlobalState = {user:"loading",categoryMap:"loading"}
+export const GlobalContext = React.createContext(initialGlobalState);
 
 
 function App() {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [globalState, setGlobalState] = useState({
-    user:undefined
-  })
+  const [globalState, setGlobalState] = useState(initialGlobalState)
   const openDrawer = () => {
     setDrawerOpen(true)
   }
@@ -64,39 +65,44 @@ function App() {
     history.push('/login')
   }
   const handleLogoutBtn = ()=>{
+    console.log('log out clicked')
     firebase.auth().signOut()
-    setGlobalState({user:undefined})
+    setGlobalState({...globalState,user:undefined})
   }
 
-  const isLoggedIn = ()=>{
-    return globalState.user !== undefined
-  }
+
 
   useEffect(() => {
+     console.log('register auth listen')
       const unregisterAuthStateListener = firebase.auth().onAuthStateChanged(function (user) {
-        if (user) {
+        // console.log(user)
+        if (!!user) {
           console.log("logged in")
-          console.log(user)
           setGlobalState({
+            ...globalState,
             user:user
           })
         } else {
           // User is signed out.
-          setGlobalState({
-            user:undefined
-          })
           console.log("logged out")
+          setGlobalState({
+            ...globalState,
+            user:"logged out"
+          })
         }
       }, function (error) {
         console.error(error);
       });
-      return ()=>{unregisterAuthStateListener()}
+      // return ()=>{
+      //   console.log('unregister')
+      //   unregisterAuthStateListener()
+      // }
     }, []
   )
 
   return (
     <div>
-      <AuthContext.Provider value={{globalState: globalState, setGlobalState: setGlobalState}}>
+      <GlobalContext.Provider value={{globalState: globalState, setGlobalState: setGlobalState}}>
 
         <div className={classes.appBarDiv}>
           <AppBar position={"static"} className={classes.appBar}>
@@ -108,7 +114,7 @@ function App() {
               <Typography variant="h6" className={classes.title}>
                 Hymn Music Sheet
               </Typography>
-              {isLoggedIn()?(
+              {isLoggedIn(globalState)?(
                 <Button color="inherit" onClick={handleLogoutBtn}>Sign Out</Button>
               ):(
                 <Button color="inherit" onClick={handleLoginBtn}>Sign In</Button>
@@ -121,10 +127,13 @@ function App() {
             renders the first one that matches the current URL. */}
         <Switch>
           <Route path="/hymn/:id">
-            <HymnPage/>
+            <ViewHymnPage/>
           </Route>
           <Route path="/add">
-            <AddHymnPage/>
+            <EditAddHymnPage/>
+          </Route>
+          <Route path="/category/:id">
+            <ViewCategoryPage/>
           </Route>
           <Route path="/categories">
             <ListCategoryPage/>
@@ -139,7 +148,7 @@ function App() {
             <DeleteCategoryPage/>
           </Route>
           <Route path="/edit/:id">
-            <AddHymnPage/>
+            <EditAddHymnPage/>
           </Route>
           <Route path="/delete/:id">
             <DeleteHymnPage/>
@@ -152,7 +161,7 @@ function App() {
             <ListCategoryPage/>
           </Route>
         </Switch>
-      </AuthContext.Provider>
+      </GlobalContext.Provider>
     </div>
   );
 }

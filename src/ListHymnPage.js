@@ -8,7 +8,7 @@ import {Link, useHistory} from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import {AuthContext} from "./App";
+import {GlobalContext} from "./App";
 import abcjs from "abcjs";
 
 const useStyles = makeStyles((theme) => ({
@@ -34,17 +34,23 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 
-function ListHymnPage() {
+function ListHymnPage(props) {
   const classes = useStyles()
   const history = useHistory()
   const [hymnList, setHymnList] = useState([])
-  const { globalState, setGlobalState } = React.useContext(AuthContext);
+  const { globalState, setGlobalState } = React.useContext(GlobalContext);
+  const {filterCategory} = props
 
   useEffect(() => {
     const fetchHymns = async () => {
-      let querySnapchot = await db.collection("hymns").orderBy('name').limit(25).get()
+      let querySnapshot
+      if(!!filterCategory){
+        querySnapshot = await db.collection('hymns').where("category","==",filterCategory).get()
+      }else{
+        querySnapshot = await db.collection("hymns").get()
+      }
       let tmpArr = []
-      querySnapchot.forEach((doc) => {
+      querySnapshot.forEach((doc) => {
         const data = doc.data()
         const parsed = abcjs.renderAbc("*", data.musicABC);
         if(!!parsed && !!parsed[0]){
