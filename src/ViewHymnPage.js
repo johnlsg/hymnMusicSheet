@@ -2,48 +2,55 @@ import {makeStyles} from "@material-ui/core/styles";
 import abcjs from "abcjs";
 import {useEffect, useState} from "react";
 import db from "./firebase.config"
-import {useParams} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 import 'abcjs/abcjs-audio.css';
+import {Button} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
     hymnPageRoot: {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      paddingTop:"50px",
-      overflow:"auto",
-
+      paddingTop: "50px",
+      overflow: "auto",
     },
-    playerContainer:{
-      minWidth:"70%"
+    playerContainer: {
+      minWidth: "70%"
     },
-  sheetContainer:{
-      maxWidth:"70%"
-  }
+    sheetContainer: {
+      maxWidth: "70%"
+    },
+    editDiv:{
+      display:"flex",
+      width:"70%",
+      flexDirection:"row-reverse",
+      marginBottom:"25px"
+    }
   })
 )
 
 const ViewHymnPage = () => {
   const classes = useStyles()
-  let { id } = useParams();
+  let {id} = useParams();
   const [hymn, setHymn] = useState()
+  const history = useHistory()
   // let abcString = "X:1\nT:Example\nK:Bb\nBcde|\n";
   useEffect(() => {
     console.log(id)
-    const fetchHymn = async ()=>{
+    const fetchHymn = async () => {
       let ref = await db.collection("hymns").doc(id).get()
       const data = ref.data()
       setHymn({
-        name:data.name,
-        musicABC:data.musicABC.replaceAll("\\n","\n")
+        name: data.name,
+        musicABC: data.musicABC.replaceAll("\\n", "\n")
       })
     }
     fetchHymn()
   }, [id])
 
   useEffect(() => {
-    if(hymn !== undefined) {
-      let visualObj = abcjs.renderAbc("musicSheet", hymn.musicABC, {responsive:"resize"});
+    if (hymn !== undefined) {
+      let visualObj = abcjs.renderAbc("musicSheet", hymn.musicABC, {responsive: "resize"});
       console.log(visualObj[0])
       //player control
       const synthControl = new abcjs.synth.SynthController();
@@ -62,7 +69,7 @@ const ViewHymnPage = () => {
       //create synthesizer
       let synth = new abcjs.synth.CreateSynth();
       let myContext = new AudioContext();
-      synth.init({ visualObj: visualObj[0] }).then(function () {
+      synth.init({visualObj: visualObj[0]}).then(function () {
         synthControl.setTune(visualObj[0], false, {}).then(function () {
           console.log("Audio successfully loaded.")
         }).catch(function (error) {
@@ -75,7 +82,10 @@ const ViewHymnPage = () => {
   }, [hymn])
   return (
     <div className={classes.hymnPageRoot}>
-      {!!hymn?null:<span>Loading....</span>}
+      {!!hymn ? null : <span>Loading....</span>}
+      <div id={"editDiv"} className={classes.editDiv}>
+        <Button variant={"contained"} onClick={()=>{history.push(`/edit/${id}`)}}>Edit</Button>
+      </div>
       <div id={"player"} className={classes.playerContainer}></div>
       <div id={"musicSheet"} className={classes.sheetContainer}></div>
     </div>

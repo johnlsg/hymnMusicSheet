@@ -52,7 +52,11 @@ function ListHymnPage(props) {
       if(!!filterCategory){
         querySnapshot = await db.collection('hymns').where("category","==",filterCategory).get()
         let categoryMap = (await db.collection("hymnCategory").doc('categories').get()).data().categoryMap
-        setCategoryName(categoryMap[filterCategory].categoryName)
+        if(categoryMap[filterCategory] === undefined){
+          history.push('/')
+        }else{
+          setCategoryName(categoryMap[filterCategory].categoryName)
+        }
       }else{
         querySnapshot = await db.collection("hymns").get()
       }
@@ -71,7 +75,7 @@ function ListHymnPage(props) {
       setHymnList(tmpArr)
     }
     fetchHymns()
-  }, [])
+  }, [filterCategory])
   return (
     <div className={classes.homeRoot}>
         <div className={classes.titleContainer}>

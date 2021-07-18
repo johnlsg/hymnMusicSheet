@@ -1,15 +1,11 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, configureStore} from '@reduxjs/toolkit';
+import categoryReducer from "./storeCategory";
 
-export const category = createSlice({
-  name:'category',
-  initialState:{},
-  reducers:{
-    addCategory: (state,action)=>{
 
-    },
-    editCategory: (state,action)=>{
-
-    }
-  }
-
+const store = configureStore({
+  reducer: {
+    category:categoryReducer
+  },
 })
+
+export default store

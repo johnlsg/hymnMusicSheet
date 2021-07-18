@@ -31,24 +31,34 @@ const useStyles = makeStyles((theme) => ({
 const AppNavDrawer = (props)=>{
   const classes = useStyles()
   const {drawerOpen, closeDrawer, isLoggedIn} = props
+  const [hymnCategoryList, setHymnCategoryList] = useState([])
   const {globalState, setGlobalState} = React.useContext(GlobalContext);
-  // const [hymnCategoryList, setHymnCategoryList] = useState([])
 
-  // useEffect(() => {
-  //   const fetchHymnCategory = async () => {
-  //     let categoryMap = (await db.collection("hymnCategory").doc('categories').get()).data().categoryMap
-  //     let tmpArr = []
-  //
-  //     for(let key of Object.keys(categoryMap)) {
-  //       tmpArr.push({
-  //         categoryName:categoryMap[key].categoryName,
-  //         id:key
-  //       })
-  //     }
-  //     setHymnCategoryList(tmpArr)
-  //   }
-  //   fetchHymnCategory()
-  // }, [])
+  useEffect(() => {
+    let unsub
+    const fetchHymnCategory = async () => {
+      unsub = db.collection("hymnCategory").doc('categories').onSnapshot((doc)=> {
+        let categoryMap = doc.data().categoryMap
+        let tmpArr = []
+        for (let key of Object.keys(categoryMap)) {
+          tmpArr.push({
+            categoryName: categoryMap[key].categoryName,
+            id: key
+          })
+        }
+        setHymnCategoryList(tmpArr)
+      })
+    }
+    fetchHymnCategory()
+    return ()=>{
+      console.log('try to cleanup')
+      if(unsub!==undefined){
+        console.log('unsub')
+        unsub()
+      }
+    }
+
+  }, [])
 
   return (
     <Drawer anchor={"left"} open={drawerOpen} onClose={closeDrawer}>
@@ -75,6 +85,13 @@ const AppNavDrawer = (props)=>{
               </React.Fragment>
             ):null
           }
+          {hymnCategoryList.length>0?(hymnCategoryList.map((category)=>{
+            return(
+              <ListItemLink key={category.id} to={`/category/${category.id}`}>
+                <ListItemText primary={category.categoryName}/>
+              </ListItemLink>
+              )
+          })):null}
         </List>
       </div>
     </Drawer>
