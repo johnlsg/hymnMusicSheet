@@ -53,7 +53,7 @@ const ViewHymnPage = () => {
       }
       setHymn({
         name: data.name,
-        musicABC: data.musicABC.replaceAll("\\n", "\n")
+        musicABC: data.musicABC
       })
     }
     fetchHymn().catch((e)=>{
