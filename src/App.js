@@ -21,6 +21,7 @@ import ViewCategoryPage from "./ViewCategoryPage";
 import {Provider} from "react-redux";
 import store from "./store";
 import ListHymnPage from "./ListHymnPage";
+import "@fontsource/source-serif-pro";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
