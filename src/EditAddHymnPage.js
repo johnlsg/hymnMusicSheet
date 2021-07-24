@@ -12,10 +12,10 @@ import {
   Select,
   Snackbar,
   TextField,
-  Typography
+  Typography, useMediaQuery
 } from "@material-ui/core";
 import MuiAlert from '@material-ui/lab/Alert';
-import {makeStyles} from "@material-ui/core/styles";
+import {makeStyles, useTheme} from "@material-ui/core/styles";
 import React, {useEffect, useState} from "react";
 import db from "./firebase.config";
 import {useHistory, useParams} from "react-router-dom";
@@ -29,6 +29,14 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     margin: "50px",
     padding: "30px",
+    backgroundColor: "#f5f5f5",
+    gap: "50px",
+    alignItems: "flex-start"
+  },
+  formContainerMobile:{
+    display: "flex",
+    flexDirection: "column",
+    padding: "20px",
     backgroundColor: "#f5f5f5",
     gap: "50px",
     alignItems: "flex-start"
@@ -56,7 +64,8 @@ const EditAddHymnPage = (props) => {
   const [categorySelected, setCategorySelected] = useState('')
   const [categoryList, setCategoryList] = useState([])
   const [errorMsg, setErrorMsg] = useState('Error')
-
+  const theme = useTheme();
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const handleAlertClose = (e) => {
     setAlertOpen(false)
   }
@@ -196,7 +205,7 @@ const EditAddHymnPage = (props) => {
   }
   return (
     <form autoComplete="off" noValidate>
-      <Paper className={classes.formContainer}>
+      <Paper className={isNarrowScreen?classes.formContainerMobile:classes.formContainer}>
         {
           mode === "loading" ? (
             <Typography>

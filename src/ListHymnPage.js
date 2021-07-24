@@ -79,11 +79,12 @@ function ListHymnPage(props) {
           })
         })
       }
+      console.log('sort')
       tmpArr.sort((a,b)=>{
         if(a.name > b.name){
           return 1
         }else{
-          return 0
+          return -1
         }
       })
       setHymnList(tmpArr)

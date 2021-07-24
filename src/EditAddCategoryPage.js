@@ -1,4 +1,4 @@
-import {makeStyles} from "@material-ui/core/styles";
+import {makeStyles, useTheme} from "@material-ui/core/styles";
 import MuiAlert from "@material-ui/lab/Alert";
 import React, {useEffect, useState} from "react";
 import {useHistory, useParams} from "react-router-dom";
@@ -14,7 +14,7 @@ import {
   Paper,
   Snackbar,
   TextField,
-  Typography
+  Typography, useMediaQuery
 } from "@material-ui/core";
 import {generateID, isLoggedOut} from "./utils";
 
@@ -25,6 +25,14 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     margin: "50px",
     padding: "30px",
+    backgroundColor: "#f5f5f5",
+    gap: "50px",
+    alignItems: "flex-start"
+  },
+  formContainerMobile:{
+    display: "flex",
+    flexDirection: "column",
+    padding: "20px",
     backgroundColor: "#f5f5f5",
     gap: "50px",
     alignItems: "flex-start"
@@ -44,8 +52,8 @@ const EditAddCategoryPage = (props) => {
   const [alertOpen, setAlertOpen] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const {globalState, setGlobalState} = React.useContext(GlobalContext);
-
-
+  const theme = useTheme();
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const handleAlertClose = (e) => {
     setAlertOpen(false)
   }
@@ -128,7 +136,7 @@ const EditAddCategoryPage = (props) => {
 
   return (
     <form autoComplete="off" noValidate>
-      <Paper className={classes.formContainer}>
+      <Paper className={isNarrowScreen?classes.formContainerMobile:classes.formContainer}>
         {
           mode === "loading" ? (
             <Typography>

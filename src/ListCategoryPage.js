@@ -58,11 +58,13 @@ const ListCategoryPage = (props)=>{
             id:key
           })
       }
-      tmpArr.sort((a,b)=>{
+      console.log('sort')
+      tmpArr.sort(function(a,b){
+        console.log(`a: ${a.categoryName} b:${b.categoryName}`)
         if(a.categoryName > b.categoryName){
           return 1
         }else{
-          return 0
+          return -1
         }
       })
       setHymnCategoryList(tmpArr)

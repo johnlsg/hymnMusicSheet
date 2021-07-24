@@ -162,7 +162,7 @@ function App() {
               <AuthPage/>
             </Route>
             <Route path="/version">
-              Release 5.34pm 24July
+              Release 6.04pm 24July
             </Route>
             <Route path="/">
               <ListCategoryPage/>
