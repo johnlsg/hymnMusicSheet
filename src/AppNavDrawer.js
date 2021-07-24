@@ -23,8 +23,11 @@ const useStyles = makeStyles((theme) => ({
     //...theme.mixins.toolbar,
     justifyContent: 'flex-end',
   },
+  drawerPaper:{
+    maxWidth:"75%"
+  },
   drawerContainer: {
-    minWidth: "300px"
+    // minWidth: "300px",
   }
 }))
 
@@ -46,6 +49,13 @@ const AppNavDrawer = (props)=>{
             id: key
           })
         }
+        tmpArr.sort((a,b)=>{
+          if(a.categoryName > b.categoryName){
+            return 1
+          }else{
+            return 0
+          }
+        })
         setHymnCategoryList(tmpArr)
       })
     }
@@ -61,7 +71,7 @@ const AppNavDrawer = (props)=>{
   }, [])
 
   return (
-    <Drawer anchor={"left"} open={drawerOpen} onClose={closeDrawer}>
+    <Drawer anchor={"left"} open={drawerOpen} onClose={closeDrawer} classes={{paper:classes.drawerPaper}}>
       <div className={classes.drawerContainer}>
         <div className={classes.drawerHeader}>
           <IconButton onClick={closeDrawer}>
@@ -70,24 +80,26 @@ const AppNavDrawer = (props)=>{
         </div>
         <Divider/>
         <List>
-          <ListItemLink to="/">
+          <ListItemLink to="/" onClick={closeDrawer}>
             <ListItemText primary="Home"/>
           </ListItemLink>
           {
             isLoggedIn(globalState)?(
               <React.Fragment>
-                <ListItemLink to="/add">
+                <Divider/>
+                <ListItemLink to="/add" onClick={closeDrawer}>
                   <ListItemText primary="Add Hymn"/>
                 </ListItemLink>
-                <ListItemLink to="/addCategory">
+                <ListItemLink to="/addCategory" onClick={closeDrawer}>
                   <ListItemText primary="Add Category"/>
                 </ListItemLink>
               </React.Fragment>
             ):null
           }
+          {hymnCategoryList.length>0?(<Divider/>):null}
           {hymnCategoryList.length>0?(hymnCategoryList.map((category)=>{
             return(
-              <ListItemLink key={category.id} to={`/category/${category.id}`}>
+              <ListItemLink key={category.id} to={`/category/${category.id}`} onClick={closeDrawer}>
                 <ListItemText primary={category.categoryName}/>
               </ListItemLink>
               )

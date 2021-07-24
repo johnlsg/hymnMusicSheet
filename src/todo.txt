@@ -1,0 +1,14 @@
+Issues 19 july 2021
+1. When click categories from the side bar, move to category page and close side bar.  (done)
+2. In mobile view it seems that the page can scroll to the right. Need to make it unscrollable horizontally. (done)
+4. Side bar in mobile portrait view should not cover the full screen. Cover about 75% is good enough. (done)
+5. The categories at the side bar is sort by what? My PC and phone has a different order. (done sort cats and songs)
+6. The Big header need to centralized in mobile view and use a smaller font size. Reduce the size for desktop view a bit also. (done)
+7. Try changing font-family of headers to Source Pro Serif for font family. (done)
+8. Edit button in each music sheet should only be available for logged in users. Non-logged in should not be able to see it. (done)
+9. Width of music sheet for mobile users can use the full of their browser width with either 10px or 20px margin. (done)
+10. Loading time cannot do anything to improve? Haha. (improved category list speed, doesn't parse every songs in listing)
+12. Unable to delete hymn (done)
+
+3. Is it possible to swipe open the sidebar? haha.
+11. The music sheet seems like not able to load for Microsoft Edge browser in my phone.

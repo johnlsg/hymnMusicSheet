@@ -1,10 +1,12 @@
-import {makeStyles} from "@material-ui/core/styles";
+import {makeStyles, useTheme} from "@material-ui/core/styles";
 import abcjs from "abcjs";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import db from "./firebase.config"
 import {useHistory, useParams} from "react-router-dom";
 import 'abcjs/abcjs-audio.css';
-import {Button} from "@material-ui/core";
+import {Button, useMediaQuery} from "@material-ui/core";
+import {isLoggedIn} from "./utils";
+import {GlobalContext} from "./App";
 
 const useStyles = makeStyles((theme) => ({
     hymnPageRoot: {
@@ -17,8 +19,11 @@ const useStyles = makeStyles((theme) => ({
     playerContainer: {
       minWidth: "70%"
     },
-    sheetContainer: {
+    sheetContainerWideScreen: {
       maxWidth: "70%"
+    },
+    sheetContainerNarrowScreen: {
+      maxWidth:"95%"
     },
     editDiv:{
       display:"flex",
@@ -34,6 +39,9 @@ const ViewHymnPage = () => {
   let {id} = useParams();
   const [hymn, setHymn] = useState()
   const history = useHistory()
+  const { globalState, setGlobalState } = React.useContext(GlobalContext);
+  const theme = useTheme();
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down('sm'));
   // let abcString = "X:1\nT:Example\nK:Bb\nBcde|\n";
   useEffect(() => {
     console.log(id)
@@ -83,11 +91,15 @@ const ViewHymnPage = () => {
   return (
     <div className={classes.hymnPageRoot}>
       {!!hymn ? null : <span>Loading....</span>}
-      <div id={"editDiv"} className={classes.editDiv}>
-        <Button variant={"contained"} onClick={()=>{history.push(`/edit/${id}`)}}>Edit</Button>
-      </div>
+      {
+        isLoggedIn(globalState)?(
+          <div id={"editDiv"} className={classes.editDiv}>
+            <Button variant={"contained"} onClick={()=>{history.push(`/edit/${id}`)}}>Edit</Button>
+          </div>
+        ):null
+      }
       <div id={"player"} className={classes.playerContainer}></div>
-      <div id={"musicSheet"} className={classes.sheetContainer}></div>
+      <div id={"musicSheet"} className={isNarrowScreen?classes.sheetContainerNarrowScreen:classes.sheetContainerWideScreen}></div>
     </div>
   )
 }

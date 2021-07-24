@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
     width:"100%",
     display: "flex",
     flexDirection: "column",
+    boxSizing:"border-box",
     alignItems: "center",
     padding:"20px",
     marginTop:"30px"
@@ -33,6 +34,10 @@ const useStyles = makeStyles((theme) => ({
   },
   titleContainer:{
     marginTop:"30px"
+  },
+  title:{
+    textAlign:"center",
+    fontFamily:"Source Serif Pro"
   }
 }))
 
@@ -53,6 +58,13 @@ const ListCategoryPage = (props)=>{
             id:key
           })
       }
+      tmpArr.sort((a,b)=>{
+        if(a.categoryName > b.categoryName){
+          return 1
+        }else{
+          return 0
+        }
+      })
       setHymnCategoryList(tmpArr)
     }
     fetchHymnCategory()
@@ -60,7 +72,7 @@ const ListCategoryPage = (props)=>{
   return (
     <div className={classes.homeRoot}>
       <div className={classes.titleContainer}>
-        <Typography variant={"h3"}>Hymn Categories</Typography>
+        <Typography variant={"h5"} className={classes.title}>Hymn Categories</Typography>
       </div>
       <Paper className={classes.listContainer}>
         <List className={classes.list}>

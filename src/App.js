@@ -20,6 +20,7 @@ import {isLoggedIn} from "./utils";
 import ViewCategoryPage from "./ViewCategoryPage";
 import {Provider} from "react-redux";
 import store from "./store";
+import ListHymnPage from "./ListHymnPage";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -129,6 +130,9 @@ function App() {
           <Switch>
             <Route path="/hymn/:id">
               <ViewHymnPage/>
+            </Route>
+            <Route path="/hymns">
+              <ListHymnPage/>
             </Route>
             <Route path="/add">
               <EditAddHymnPage/>

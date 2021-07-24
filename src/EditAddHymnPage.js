@@ -50,27 +50,20 @@ const EditAddHymnPage = (props) => {
   const [hymnID, setHymnID] = useState("")
   // const [hymnName, setHymnName] = useState("")
   const [hymnMusicABC, setHymnMusicABC] = useState("")
-  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [alertOpen, setAlertOpen] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const {globalState, setGlobalState} = React.useContext(GlobalContext)
   const [categorySelected, setCategorySelected] = useState('')
   const [categoryList, setCategoryList] = useState([])
-  const [oldCategory, setOldCategory] = useState('')
+  const [errorMsg, setErrorMsg] = useState('Error')
 
-  const handleConfirmDialogClose = (e) => {
-    setConfirmDialogOpen(false)
-  }
-
-  const openConfirmDialog = (e) => {
-    setConfirmDialogOpen(true)
-  }
 
   const handleAlertClose = (e) => {
     setAlertOpen(false)
   }
 
-  const openAlert = (success) => {
+  const openAlert = (success, errMsg="Error") => {
+    setErrorMsg(errMsg)
     setIsSuccess(success)
     setAlertOpen(true)
   }
@@ -90,7 +83,6 @@ const EditAddHymnPage = (props) => {
         // setHymnName(data.name)
         setHymnMusicABC(data.musicABC.replaceAll("\\n", "\n"))
         if (!!data.category) {
-          setOldCategory(data.category)
           setCategorySelected(data.category)
         }
         setMode("edit")
@@ -112,7 +104,7 @@ const EditAddHymnPage = (props) => {
         // setHymnName("")
         setHymnMusicABC("")
       }
-      if(!!oldCategory && oldCategory!==''&&data[oldCategory] === undefined){
+      if(!!categorySelected && categorySelected!==''&&data[categorySelected] === undefined){
         setCategorySelected('')
       }
     }
@@ -124,27 +116,25 @@ const EditAddHymnPage = (props) => {
 
   const handleSubmit = (e) => {
     const submitData = async () => {
-      let err = false
       let parsed = abcjs.renderAbc("*", hymnMusicABC)[0]
       let hymnTitle = ""
       if (!!parsed.metaText && !!parsed.metaText.title) {
         hymnTitle = parsed.metaText.title
       } else {
-        throw 'title not found'
+        throw 'Title not found'
       }
 
       if (mode === "add") {
-        try {
           if (categorySelected === '') {
-            await db.collection('hymns').add({musicABC: hymnMusicABC, category: ''})
+            await db.collection('hymns').add({musicABC: hymnMusicABC, category: '', hymnName:hymnTitle})
           } else {
             const hymnDocRef = db.collection('hymns').doc()
             await db.runTransaction(async (transaction) => {
               let categoryMapData = (await transaction.get(db.collection('hymnCategory').doc('categories'))).data().categoryMap
               if (categoryMapData[categorySelected] === undefined) {
-                throw 'category not exist'
+                throw 'Category not exist'
               }
-              transaction.set(hymnDocRef, {musicABC: hymnMusicABC, category: categorySelected})
+              transaction.set(hymnDocRef, {musicABC: hymnMusicABC, category: categorySelected, hymnName:hymnTitle})
               let tmpArr = categoryMapData[categorySelected].categoryContent
               tmpArr.push({hymnID: hymnDocRef.id, hymnName: hymnTitle})
               let updateMap = {}
@@ -152,23 +142,16 @@ const EditAddHymnPage = (props) => {
               transaction.update(db.collection('hymnCategory').doc('categories'), updateMap)
             })
           }
-        } catch (e) {
-          err = true
-          console.error(e)
-        }
       } else if (mode === "edit") {
-        try {
-          if (categorySelected === '' && oldCategory === '') {
-            await db.collection('hymns').doc(id).update({musicABC: hymnMusicABC, category: ''})
-            return
-          }
 
           const hymnDocRef = db.collection('hymns').doc(id)
           await db.runTransaction(async (transaction) => {
             let categoryMapData = (await transaction.get(db.collection('hymnCategory').doc('categories'))).data().categoryMap
+            let oldCategory = (await transaction.get(hymnDocRef)).data().category
             let updateMap = {}
             //update old category content
-            if (categoryMapData[oldCategory] !== undefined) {
+            console.log('old category')
+            if (oldCategory!== undefined && categoryMapData[oldCategory] !== undefined) {
               let oldCategoryHymns = categoryMapData[oldCategory].categoryContent
               for (let i = 0; i < oldCategoryHymns.length; i++) {
                 if (oldCategoryHymns[i].hymnID === id) {
@@ -180,34 +163,25 @@ const EditAddHymnPage = (props) => {
             }
             //update new category content
             if(categorySelected !== "" && categoryMapData[categorySelected] === undefined) {
-              throw 'category not exist'
+              throw 'New category no longer exist'
             }else if(categorySelected!==''){
               let newCategoryHymns = categoryMapData[categorySelected].categoryContent
               newCategoryHymns.push({hymnID: hymnDocRef.id, hymnName: hymnTitle})
               updateMap[`categoryMap.${categorySelected}.categoryContent`] = newCategoryHymns
             }
             transaction.update(db.collection('hymnCategory').doc('categories'), updateMap)
-            transaction.update(db.collection('hymns').doc(id), {musicABC:hymnMusicABC, category:categorySelected})
+            transaction.update(db.collection('hymns').doc(id), {musicABC:hymnMusicABC, category:categorySelected, hymnName:hymnTitle})
           })
-        } catch (e) {
-          err = true
-          console.error(e)
-        }
-      }
-      if (err) {
-        openAlert(false)
-      } else {
-        openAlert(true)
       }
     }
 
-    submitData()
+    submitData().then(()=>{
+      openAlert(true)
+    }).catch((e)=>{
+      console.error(e)
+      openAlert(false,e)
+    })
 
-  }
-
-  const confirmAndSubmit = (e) => {
-    handleConfirmDialogClose()
-    handleSubmit()
   }
 
   const handleCategorySelectChange = (e) => {
@@ -265,31 +239,10 @@ const EditAddHymnPage = (props) => {
           </Alert>
         ) : (
           <Alert onClose={handleAlertClose} severity="error">
-            Error
+            {errorMsg}
           </Alert>
         )}
       </Snackbar>
-      <Dialog
-        open={confirmDialogOpen}
-        onClose={handleConfirmDialogClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">Confirm Submit</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Confirm to submit ?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleConfirmDialogClose} color="primary">
-            No
-          </Button>
-          <Button onClick={confirmAndSubmit} color="primary" autoFocus>
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
     </form>
   )
 }

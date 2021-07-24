@@ -26,7 +26,6 @@ const DeleteHymnPage = (props)=>{
 
   const doDelete = ()=>{
     const deleteData = async ()=>{
-      console.log('fake delete')
       try{
         await db.runTransaction(async (transaction)=>{
           let categoryID = (await transaction.get(db.collection('hymns').doc(id))).data().category
@@ -45,6 +44,7 @@ const DeleteHymnPage = (props)=>{
             updateMap[`categoryMap.${categoryID}.categoryContent`] = oldCategoryHymns
           }
           transaction.update(db.collection('hymnCategory').doc('categories'), updateMap)
+          transaction.delete(db.collection('hymns').doc(id))
         })
         setIsSuccess(true)
       }catch (e) {

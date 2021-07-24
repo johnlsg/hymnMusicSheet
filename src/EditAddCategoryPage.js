@@ -41,17 +41,10 @@ const EditAddCategoryPage = (props) => {
   const history = useHistory()
   const [mode, setMode] = useState("loading")
   const [hymnCategoryName, setHymnCategoryName] = useState("")
-  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [alertOpen, setAlertOpen] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const {globalState, setGlobalState} = React.useContext(GlobalContext);
-  const handleConfirmDialogClose = (e) => {
-    setConfirmDialogOpen(false)
-  }
 
-  const openConfirmDialog = (e) => {
-    setConfirmDialogOpen(true)
-  }
 
   const handleAlertClose = (e) => {
     setAlertOpen(false)
@@ -132,10 +125,6 @@ const EditAddCategoryPage = (props) => {
 
   }
 
-  const confirmAndSubmit = (e) => {
-    handleConfirmDialogClose()
-    handleSubmit()
-  }
 
   return (
     <form autoComplete="off" noValidate>
