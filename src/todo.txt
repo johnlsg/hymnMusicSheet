@@ -1,4 +1,5 @@
-Issues 19 july 2021
+Issues
+Closed
 1. When click categories from the side bar, move to category page and close side bar.  (done)
 2. In mobile view it seems that the page can scroll to the right. Need to make it unscrollable horizontally. (done)
 4. Side bar in mobile portrait view should not cover the full screen. Cover about 75% is good enough. (done)
@@ -9,6 +10,8 @@ Issues 19 july 2021
 9. Width of music sheet for mobile users can use the full of their browser width with either 10px or 20px margin. (done)
 10. Loading time cannot do anything to improve? Haha. (improved category list speed, doesn't parse every songs in listing)
 12. Unable to delete hymn (done)
+- when I save the music sheet, can straight away bring me to the music sheet so I can see/listen my product? 24/7/21 (done)
 
+Open
 3. Is it possible to swipe open the sidebar? haha.
 11. The music sheet seems like not able to load for Microsoft Edge browser in my phone.

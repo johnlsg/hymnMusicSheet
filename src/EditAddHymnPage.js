@@ -57,7 +57,6 @@ const EditAddHymnPage = (props) => {
   const [categoryList, setCategoryList] = useState([])
   const [errorMsg, setErrorMsg] = useState('Error')
 
-
   const handleAlertClose = (e) => {
     setAlertOpen(false)
   }
@@ -85,6 +84,7 @@ const EditAddHymnPage = (props) => {
         if (!!data.category) {
           setCategorySelected(data.category)
         }
+        setHymnID(id)
         setMode("edit")
       }
     }
@@ -97,7 +97,6 @@ const EditAddHymnPage = (props) => {
       }
       setCategoryList(categoryArr)
       if (id !== undefined || !!id) {
-        setHymnID(id)
         await fetchHymn()
       } else {
         setMode("add")
@@ -113,7 +112,11 @@ const EditAddHymnPage = (props) => {
 
   }, [id])
 
-
+  const redirectToHymn = ()=>{
+    if(!!hymnID){
+      history.push("/hymn/"+hymnID)
+    }
+  }
   const handleSubmit = (e) => {
     const submitData = async () => {
       let parsed = abcjs.renderAbc("*", hymnMusicABC)[0]
@@ -141,6 +144,7 @@ const EditAddHymnPage = (props) => {
               updateMap[`categoryMap.${categorySelected}.categoryContent`] = tmpArr
               transaction.update(db.collection('hymnCategory').doc('categories'), updateMap)
             })
+            return hymnDocRef.id
           }
       } else if (mode === "edit") {
 
@@ -172,10 +176,13 @@ const EditAddHymnPage = (props) => {
             transaction.update(db.collection('hymnCategory').doc('categories'), updateMap)
             transaction.update(db.collection('hymns').doc(id), {musicABC:hymnMusicABC, category:categorySelected, hymnName:hymnTitle})
           })
+        return id
       }
     }
 
-    submitData().then(()=>{
+    submitData().then((docID)=>{
+      console.log(docID)
+      setHymnID(docID)
       openAlert(true)
     }).catch((e)=>{
       console.error(e)
@@ -186,9 +193,7 @@ const EditAddHymnPage = (props) => {
 
   const handleCategorySelectChange = (e) => {
     setCategorySelected(e.target.value)
-    console.log(e.target.value)
   }
-
   return (
     <form autoComplete="off" noValidate>
       <Paper className={classes.formContainer}>
@@ -234,7 +239,9 @@ const EditAddHymnPage = (props) => {
       </Paper>
       <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleAlertClose}>
         {isSuccess === true ? (
-          <Alert onClose={handleAlertClose} severity="success">
+          <Alert onClose={handleAlertClose} severity="success" action={
+            <Button onClick={redirectToHymn}>View</Button>
+          }>
             Successful
           </Alert>
         ) : (

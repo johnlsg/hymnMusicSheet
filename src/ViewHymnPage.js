@@ -48,12 +48,18 @@ const ViewHymnPage = () => {
     const fetchHymn = async () => {
       let ref = await db.collection("hymns").doc(id).get()
       const data = ref.data()
+      if(data===undefined){
+        throw 'Hymn not found'
+      }
       setHymn({
         name: data.name,
         musicABC: data.musicABC.replaceAll("\\n", "\n")
       })
     }
-    fetchHymn()
+    fetchHymn().catch((e)=>{
+      console.error(e)
+      history.push('/')
+    })
   }, [id])
 
   useEffect(() => {
