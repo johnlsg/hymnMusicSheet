@@ -89,7 +89,7 @@ const EditAddHymnPage = (props) => {
         history.push('/')
       } else if (!!data.musicABC) {
         // setHymnName(data.name)
-        setHymnMusicABC(data.musicABC.replaceAll("\\n", "\n"))
+        setHymnMusicABC(data.musicABC)
         if (!!data.category) {
           setCategorySelected(data.category)
         }
