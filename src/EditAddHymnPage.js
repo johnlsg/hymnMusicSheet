@@ -163,7 +163,6 @@ const EditAddHymnPage = (props) => {
             let oldCategory = (await transaction.get(hymnDocRef)).data().category
             let updateMap = {}
             //update old category content
-            console.log('old category')
             if (oldCategory!== undefined && categoryMapData[oldCategory] !== undefined) {
               let oldCategoryHymns = categoryMapData[oldCategory].categoryContent
               for (let i = 0; i < oldCategoryHymns.length; i++) {
@@ -190,7 +189,6 @@ const EditAddHymnPage = (props) => {
     }
 
     submitData().then((docID)=>{
-      console.log(docID)
       setHymnID(docID)
       openAlert(true)
     }).catch((e)=>{

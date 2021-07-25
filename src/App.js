@@ -65,25 +65,20 @@ function App() {
     history.push('/login')
   }
   const handleLogoutBtn = () => {
-    console.log('log out clicked')
     firebase.auth().signOut()
     setGlobalState({...globalState, user: undefined})
   }
 
 
   useEffect(() => {
-      console.log('register auth listen')
       const unregisterAuthStateListener = firebase.auth().onAuthStateChanged(function (user) {
-        // console.log(user)
         if (!!user) {
-          console.log("logged in")
           setGlobalState({
             ...globalState,
             user: user
           })
         } else {
           // User is signed out.
-          console.log("logged out")
           setGlobalState({
             ...globalState,
             user: "logged out"

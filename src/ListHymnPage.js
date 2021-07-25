@@ -79,7 +79,6 @@ function ListHymnPage(props) {
           })
         })
       }
-      console.log('sort')
       tmpArr.sort((a,b)=>{
         if(a.name > b.name){
           return 1

@@ -17,8 +17,6 @@ const AuthPage = (props) => {
   useEffect(() => {
       const unregisterAuthStateListener = firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
-          console.log("logged in")
-          console.log(user)
           setGlobalState({
             user:user
           })
@@ -27,10 +25,9 @@ const AuthPage = (props) => {
           setGlobalState({
             user:undefined
           })
-          console.log("logged out")
         }
       }, function (error) {
-        console.log(error);
+        console.error(error);
       });
 
       let ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(firebase.auth());

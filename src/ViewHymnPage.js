@@ -44,7 +44,6 @@ const ViewHymnPage = () => {
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down('sm'));
   // let abcString = "X:1\nT:Example\nK:Bb\nBcde|\n";
   useEffect(() => {
-    console.log(id)
     const fetchHymn = async () => {
       let ref = await db.collection("hymns").doc(id).get()
       const data = ref.data()
@@ -65,7 +64,6 @@ const ViewHymnPage = () => {
   useEffect(() => {
     if (hymn !== undefined) {
       let visualObj = abcjs.renderAbc("musicSheet", hymn.musicABC, {responsive: "resize"});
-      console.log(visualObj[0])
       //player control
       const synthControl = new abcjs.synth.SynthController();
       let cursorControl = {}
@@ -85,7 +83,6 @@ const ViewHymnPage = () => {
       let myContext = new AudioContext();
       synth.init({visualObj: visualObj[0]}).then(function () {
         synthControl.setTune(visualObj[0], false, {}).then(function () {
-          console.log("Audio successfully loaded.")
         }).catch(function (error) {
           console.warn("Audio problem:", error);
         });

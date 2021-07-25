@@ -61,9 +61,7 @@ const AppNavDrawer = (props)=>{
     }
     fetchHymnCategory()
     return ()=>{
-      console.log('try to cleanup')
       if(unsub!==undefined){
-        console.log('unsub')
         unsub()
       }
     }

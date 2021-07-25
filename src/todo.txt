@@ -9,9 +9,9 @@ Closed
 8. Edit button in each music sheet should only be available for logged in users. Non-logged in should not be able to see it. (done)
 9. Width of music sheet for mobile users can use the full of their browser width with either 10px or 20px margin. (done)
 10. Loading time cannot do anything to improve? Haha. (improved category list speed, doesn't parse every songs in listing)
+11. The music sheet seems like not able to load for Microsoft Edge browser in my phone. (done)
 12. Unable to delete hymn (done)
 - when I save the music sheet, can straight away bring me to the music sheet so I can see/listen my product? 24/7/21 (done)
 
 Open
 3. Is it possible to swipe open the sidebar? haha.
-11. The music sheet seems like not able to load for Microsoft Edge browser in my phone.

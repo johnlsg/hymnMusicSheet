@@ -77,8 +77,6 @@ const EditAddCategoryPage = (props) => {
       if(data[id] !== undefined){
         data = data[id]
         setHymnCategoryName(data.categoryName)
-        console.log("dsdssds")
-        console.log(data)
       }else{
         history.push('/error')
       }

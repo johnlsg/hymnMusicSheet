@@ -58,9 +58,7 @@ const ListCategoryPage = (props)=>{
             id:key
           })
       }
-      console.log('sort')
       tmpArr.sort(function(a,b){
-        console.log(`a: ${a.categoryName} b:${b.categoryName}`)
         if(a.categoryName > b.categoryName){
           return 1
         }else{
