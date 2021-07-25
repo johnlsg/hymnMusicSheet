@@ -26,8 +26,6 @@ import "@fontsource/source-serif-pro";
 const useStyles = makeStyles((theme) => ({
     appBar: {
       display: "flex"
-    }, appBarDiv: {
-      flexGrow: 1,
     },
     menuButton: {
       marginRight: theme.spacing(2),
@@ -37,6 +35,18 @@ const useStyles = makeStyles((theme) => ({
     },
     spacer: {
       flexGrow: 1,
+    },
+    footer: {
+      width: "100%",
+      textAlign: "center",
+    },
+    contentFooterContainer: {
+      display: "flex",
+      flexDirection: "column",
+      height: "100%"
+    },
+    contentContainer:{
+      flexGrow:1
     }
 
   })
@@ -95,11 +105,11 @@ function App() {
   )
 
   return (
-    <div>
+    <React.Fragment>
       <Provider store={store}>
         <GlobalContext.Provider value={{globalState: globalState, setGlobalState: setGlobalState}}>
 
-          <div className={classes.appBarDiv}>
+          <div className={classes.contentFooterContainer}>
             <AppBar position={"static"} className={classes.appBar}>
               <Toolbar>
 
@@ -119,54 +129,62 @@ function App() {
                 )}
               </Toolbar>
             </AppBar>
+            <AppNavDrawer drawerOpen={drawerOpen} closeDrawer={closeDrawer} isLoggedIn={isLoggedIn}/>
+
+            <div className={classes.contentContainer}>
+
+              <Switch>
+                <Route path="/hymn/:id">
+                  <ViewHymnPage/>
+                </Route>
+                <Route path="/hymns">
+                  <ListHymnPage/>
+                </Route>
+                <Route path="/add">
+                  <EditAddHymnPage/>
+                </Route>
+                <Route path="/category/:id">
+                  <ViewCategoryPage/>
+                </Route>
+                <Route path="/categories">
+                  <ListCategoryPage/>
+                </Route>
+                <Route path="/addCategory">
+                  <EditAddCategoryPage/>
+                </Route>
+                <Route path="/editCategory/:id">
+                  <EditAddCategoryPage/>
+                </Route>
+                <Route path="/deleteCategory/:id">
+                  <DeleteCategoryPage/>
+                </Route>
+                <Route path="/edit/:id">
+                  <EditAddHymnPage/>
+                </Route>
+                <Route path="/delete/:id">
+                  <DeleteHymnPage/>
+                </Route>
+                <Route path="/login">
+                  <AuthPage/>
+                </Route>
+                <Route path="/version">
+                  Release 8.54pm 24July
+                </Route>
+                <Route path="/">
+                  <ListCategoryPage/>
+                </Route>
+              </Switch>
+            </div>
+            <div className={classes.footer}>
+              <hr/>
+              <Typography>
+                © 2021 Hymn Sheet Music. All rights reserved.
+              </Typography>
+            </div>
           </div>
-          <AppNavDrawer drawerOpen={drawerOpen} closeDrawer={closeDrawer} isLoggedIn={isLoggedIn}/>
-          {/* A <Switch> looks through its children <Route>s and
-            renders the first one that matches the current URL. */}
-          <Switch>
-            <Route path="/hymn/:id">
-              <ViewHymnPage/>
-            </Route>
-            <Route path="/hymns">
-              <ListHymnPage/>
-            </Route>
-            <Route path="/add">
-              <EditAddHymnPage/>
-            </Route>
-            <Route path="/category/:id">
-              <ViewCategoryPage/>
-            </Route>
-            <Route path="/categories">
-              <ListCategoryPage/>
-            </Route>
-            <Route path="/addCategory">
-              <EditAddCategoryPage/>
-            </Route>
-            <Route path="/editCategory/:id">
-              <EditAddCategoryPage/>
-            </Route>
-            <Route path="/deleteCategory/:id">
-              <DeleteCategoryPage/>
-            </Route>
-            <Route path="/edit/:id">
-              <EditAddHymnPage/>
-            </Route>
-            <Route path="/delete/:id">
-              <DeleteHymnPage/>
-            </Route>
-            <Route path="/login">
-              <AuthPage/>
-            </Route>
-            <Route path="/version">
-              Release 8.54pm 24July
-            </Route>
-            <Route path="/">
-              <ListCategoryPage/>
-            </Route>
-          </Switch>
         </GlobalContext.Provider>
       </Provider>
-    </div>
+    </React.Fragment>
   );
 }
 
