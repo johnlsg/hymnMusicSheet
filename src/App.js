@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
     footer: {
       width: "100%",
       textAlign: "center",
+      backgroundColor: "#C5CAE9",
+      paddingTop: "15px",
+      paddingBottom: "15px"
     },
     contentFooterContainer: {
       display: "flex",
@@ -47,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     },
     contentContainer:{
       flexGrow:1
-    }
+    },
 
   })
 )
@@ -168,7 +171,7 @@ function App() {
                   <AuthPage/>
                 </Route>
                 <Route path="/version">
-                  Release 1125 25July
+                  Release 0838 27July
                 </Route>
                 <Route path="/">
                   <ListCategoryPage/>
@@ -176,7 +179,6 @@ function App() {
               </Switch>
             </div>
             <div className={classes.footer}>
-              <hr/>
               <Typography>
                 © 2021 Hymn Sheet Music. All rights reserved.
               </Typography>
