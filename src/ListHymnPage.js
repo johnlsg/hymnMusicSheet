@@ -64,8 +64,9 @@ function ListHymnPage(props) {
         }
         categoryMap[filterCategory].categoryContent.forEach((hymn) => {
           tmpArr.push({
-            id: hymn.hymnID,
-            name: hymn.hymnName
+            id:hymn.hymnID,
+            name: hymn.hymnName,
+            slug:hymn.slug
           })
         })
       } else {
@@ -73,9 +74,9 @@ function ListHymnPage(props) {
         querySnapshot.forEach((doc) => {
           const data = doc.data()
           tmpArr.push({
-            musicABC: data.musicABC,
-            id: doc.id,
-            name: data.hymnName
+            id:doc.id,
+            name: data.hymnName,
+            slug:data.slug
           })
         })
       }
@@ -102,9 +103,9 @@ function ListHymnPage(props) {
             <List className={classes.list}>
               {hymnList.length === 0 ? "It is empty here" : null}
               {hymnList.map((item, index) => (
-                  <div key={item.id}>
+                  <div key={item.slug}>
                     <ListItem button divider={hymnList[index + 1] !== undefined} onClick={() => {
-                      history.push(`/hymn/${item.id}`)
+                      history.push(`/hymn/${item.slug}`)
                     }}>
                       <ListItemText primary={item.name}/>
                       {

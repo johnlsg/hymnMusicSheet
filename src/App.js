@@ -22,6 +22,7 @@ import {Provider} from "react-redux";
 import store from "./store";
 import ListHymnPage from "./ListHymnPage";
 import "@fontsource/source-serif-pro";
+import DBMigration from "./DBMigration";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -171,7 +172,10 @@ function App() {
                   <AuthPage/>
                 </Route>
                 <Route path="/version">
-                  Release 0955 1Aug21
+                  Release 1605 8Aug21
+                </Route>
+                <Route path="/migrate">
+                  <DBMigration/>
                 </Route>
                 <Route path="/">
                   <ListCategoryPage/>

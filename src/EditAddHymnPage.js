@@ -1,10 +1,5 @@
 import {
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   FormControl,
   InputLabel,
   MenuItem,
@@ -12,7 +7,8 @@ import {
   Select,
   Snackbar,
   TextField,
-  Typography, useMediaQuery
+  Typography,
+  useMediaQuery
 } from "@material-ui/core";
 import MuiAlert from '@material-ui/lab/Alert';
 import {makeStyles, useTheme} from "@material-ui/core/styles";
@@ -22,6 +18,7 @@ import {useHistory, useParams} from "react-router-dom";
 import {GlobalContext} from "./App";
 import {isLoggedOut} from "./utils";
 import abcjs from "abcjs";
+import slugify from "slugify";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -33,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     gap: "50px",
     alignItems: "flex-start"
   },
-  formContainerMobile:{
+  formContainerMobile: {
     display: "flex",
     flexDirection: "column",
     padding: "20px",
@@ -57,6 +54,7 @@ const EditAddHymnPage = (props) => {
   const [mode, setMode] = useState("loading")
   const [hymnID, setHymnID] = useState("")
   // const [hymnName, setHymnName] = useState("")
+  const [successRedirect, setSuccessRedirect] = useState()
   const [hymnMusicABC, setHymnMusicABC] = useState("")
   const [alertOpen, setAlertOpen] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
@@ -70,7 +68,7 @@ const EditAddHymnPage = (props) => {
     setAlertOpen(false)
   }
 
-  const openAlert = (success, errMsg="Error") => {
+  const openAlert = (success, errMsg = "Error") => {
     setErrorMsg(errMsg)
     setIsSuccess(success)
     setAlertOpen(true)
@@ -88,7 +86,6 @@ const EditAddHymnPage = (props) => {
       if (data === undefined) {
         history.push('/')
       } else if (!!data.musicABC) {
-        // setHymnName(data.name)
         setHymnMusicABC(data.musicABC)
         if (!!data.category) {
           setCategorySelected(data.category)
@@ -109,10 +106,9 @@ const EditAddHymnPage = (props) => {
         await fetchHymn()
       } else {
         setMode("add")
-        // setHymnName("")
         setHymnMusicABC("")
       }
-      if(!!categorySelected && categorySelected!==''&&data[categorySelected] === undefined){
+      if (!!categorySelected && categorySelected !== '' && data[categorySelected] === undefined) {
         setCategorySelected('')
       }
     }
@@ -121,9 +117,9 @@ const EditAddHymnPage = (props) => {
 
   }, [id])
 
-  const redirectToHymn = ()=>{
-    if(!!hymnID){
-      history.push("/hymn/"+hymnID)
+  const redirectToHymn = () => {
+    if (!!successRedirect) {
+      history.push("/hymn/" + successRedirect)
     }
   }
   const handleSubmit = (e) => {
@@ -135,65 +131,81 @@ const EditAddHymnPage = (props) => {
       } else {
         throw 'Title not found'
       }
-
+      let slug = slugify(hymnTitle, {strict: true})
       if (mode === "add") {
-          if (categorySelected === '') {
-            await db.collection('hymns').add({musicABC: hymnMusicABC, category: '', hymnName:hymnTitle})
-          } else {
-            const hymnDocRef = db.collection('hymns').doc()
-            await db.runTransaction(async (transaction) => {
-              let categoryMapData = (await transaction.get(db.collection('hymnCategory').doc('categories'))).data().categoryMap
-              if (categoryMapData[categorySelected] === undefined) {
-                throw 'Category not exist'
-              }
-              transaction.set(hymnDocRef, {musicABC: hymnMusicABC, category: categorySelected, hymnName:hymnTitle})
-              let tmpArr = categoryMapData[categorySelected].categoryContent
-              tmpArr.push({hymnID: hymnDocRef.id, hymnName: hymnTitle})
-              let updateMap = {}
-              updateMap[`categoryMap.${categorySelected}.categoryContent`] = tmpArr
-              transaction.update(db.collection('hymnCategory').doc('categories'), updateMap)
-            })
-            return hymnDocRef.id
-          }
-      } else if (mode === "edit") {
-
-          const hymnDocRef = db.collection('hymns').doc(id)
+        if (categorySelected === '') {
+          let newDocRef = db.collection('hymns').doc()
+          slug = slug +"-"+ newDocRef.id.slice(-6)
+          await newDocRef.set({musicABC: hymnMusicABC, category: '', hymnName: hymnTitle, slug: slug})
+          return slug
+        } else {
+          const hymnDocRef = db.collection('hymns').doc()
+          slug = slug +"-"+ hymnDocRef.id.slice(-6)
           await db.runTransaction(async (transaction) => {
             let categoryMapData = (await transaction.get(db.collection('hymnCategory').doc('categories'))).data().categoryMap
-            let oldCategory = (await transaction.get(hymnDocRef)).data().category
+            if (categoryMapData[categorySelected] === undefined) {
+              throw 'Category not exist'
+            }
+            transaction.set(hymnDocRef, {
+              musicABC: hymnMusicABC,
+              category: categorySelected,
+              hymnName: hymnTitle,
+              slug: slug
+            })
+            let tmpArr = categoryMapData[categorySelected].categoryContent
+            tmpArr.push({hymnID: hymnDocRef.id, hymnName: hymnTitle, slug: slug})
             let updateMap = {}
-            //update old category content
-            if (oldCategory!== undefined && categoryMapData[oldCategory] !== undefined) {
-              let oldCategoryHymns = categoryMapData[oldCategory].categoryContent
-              for (let i = 0; i < oldCategoryHymns.length; i++) {
-                if (oldCategoryHymns[i].hymnID === id) {
-                  oldCategoryHymns.splice(i, 1)
-                  break
-                }
-              }
-              updateMap[`categoryMap.${oldCategory}.categoryContent`] = oldCategoryHymns
-            }
-            //update new category content
-            if(categorySelected !== "" && categoryMapData[categorySelected] === undefined) {
-              throw 'New category no longer exist'
-            }else if(categorySelected!==''){
-              let newCategoryHymns = categoryMapData[categorySelected].categoryContent
-              newCategoryHymns.push({hymnID: hymnDocRef.id, hymnName: hymnTitle})
-              updateMap[`categoryMap.${categorySelected}.categoryContent`] = newCategoryHymns
-            }
+            updateMap[`categoryMap.${categorySelected}.categoryContent`] = tmpArr
             transaction.update(db.collection('hymnCategory').doc('categories'), updateMap)
-            transaction.update(db.collection('hymns').doc(id), {musicABC:hymnMusicABC, category:categorySelected, hymnName:hymnTitle})
           })
-        return id
+          return slug
+        }
+      } else if (mode === "edit") {
+
+        const hymnDocRef = db.collection('hymns').doc(hymnID)
+        slug = slug+"-" + hymnDocRef.id.slice(-6)
+        console.log(slug)
+        await db.runTransaction(async (transaction) => {
+          let categoryMapData = (await transaction.get(db.collection('hymnCategory').doc('categories'))).data().categoryMap
+          let oldCategory = (await transaction.get(hymnDocRef)).data().category
+          let updateMap = {}
+          //update old category content
+          if (oldCategory !== undefined && categoryMapData[oldCategory] !== undefined) {
+            let oldCategoryHymns = categoryMapData[oldCategory].categoryContent
+            for (let i = 0; i < oldCategoryHymns.length; i++) {
+              if (oldCategoryHymns[i].hymnID === hymnID) {
+                oldCategoryHymns.splice(i, 1)
+                break
+              }
+            }
+            updateMap[`categoryMap.${oldCategory}.categoryContent`] = oldCategoryHymns
+          }
+          //update new category content
+          if (categorySelected !== "" && categoryMapData[categorySelected] === undefined) {
+            throw 'New category no longer exist'
+          } else if (categorySelected !== '') {
+            let newCategoryHymns = categoryMapData[categorySelected].categoryContent
+            newCategoryHymns.push({hymnID: hymnDocRef.id, hymnName: hymnTitle, slug: slug})
+            updateMap[`categoryMap.${categorySelected}.categoryContent`] = newCategoryHymns
+          }
+          transaction.update(db.collection('hymnCategory').doc('categories'), updateMap)
+          transaction.update(db.collection('hymns').doc(hymnID), {
+            musicABC: hymnMusicABC,
+            category: categorySelected,
+            hymnName: hymnTitle,
+            slug: slug
+          })
+        })
+        return slug
       }
     }
 
-    submitData().then((docID)=>{
-      setHymnID(docID)
+    submitData().then((redirectSlug) => {
+      setSuccessRedirect(redirectSlug)
       openAlert(true)
-    }).catch((e)=>{
+    }).catch((e) => {
       console.error(e)
-      openAlert(false,e)
+      openAlert(false, e)
     })
 
   }
@@ -203,7 +215,7 @@ const EditAddHymnPage = (props) => {
   }
   return (
     <form autoComplete="off" noValidate>
-      <Paper className={isNarrowScreen?classes.formContainerMobile:classes.formContainer}>
+      <Paper className={isNarrowScreen ? classes.formContainerMobile : classes.formContainer}>
         {
           mode === "loading" ? (
             <Typography>
@@ -211,9 +223,7 @@ const EditAddHymnPage = (props) => {
             </Typography>
           ) : (
             <React.Fragment>
-              {/*<TextField id="hymnName" variant="filled" label="Hymn Name" value={hymnName} onChange={(e) => {*/}
-              {/*  setHymnName(e.target.value)*/}
-              {/*}}/>*/}
+
               <TextField required id="hymnMusicABC" multiline variant="filled" label="Hymn Music ABC Notation" fullWidth
                          value={hymnMusicABC} onChange={(e) => {
                 setHymnMusicABC(e.target.value)
@@ -246,8 +256,9 @@ const EditAddHymnPage = (props) => {
       </Paper>
       <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleAlertClose}>
         {isSuccess === true ? (
-          <Alert onClose={handleAlertClose} severity="success" action={
+          <Alert onClose={handleAlertClose} severity="success" action={(!!successRedirect) ? (
             <Button onClick={redirectToHymn}>View</Button>
+          ) : null
           }>
             Successful
           </Alert>

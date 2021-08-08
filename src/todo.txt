@@ -15,3 +15,5 @@ Closed
 
 Open
 3. Is it possible to swipe open the sidebar? haha.
+- add slug in view page 8/8/2021
+- change page title for view page 8/8/2021

@@ -36,30 +36,40 @@ const useStyles = makeStyles((theme) => ({
 
 const ViewHymnPage = () => {
   const classes = useStyles()
-  let {id} = useParams();
+  let {id: paramSlug} = useParams();
   const [hymn, setHymn] = useState()
   const history = useHistory()
   const { globalState, setGlobalState } = React.useContext(GlobalContext);
   const theme = useTheme();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  // let abcString = "X:1\nT:Example\nK:Bb\nBcde|\n";
   useEffect(() => {
     const fetchHymn = async () => {
-      let ref = await db.collection("hymns").doc(id).get()
-      const data = ref.data()
+      let querySnapshot = await db.collection("hymns").where("slug","==",paramSlug).get()
+      let data
+      if(querySnapshot.size>1){
+        throw "duplicate slug"
+      }else if(querySnapshot.empty){
+        throw 'Hymn not found'
+      }
+      querySnapshot.forEach((doc)=>{
+        data = {...doc.data(), id:doc.id}
+      })
       if(data===undefined){
         throw 'Hymn not found'
       }
       setHymn({
-        name: data.name,
+        id:data.id,
+        name: data.hymnName,
         musicABC: data.musicABC
       })
+      document.title = data.hymnName
     }
     fetchHymn().catch((e)=>{
       console.error(e)
+      console.error(paramSlug)
       history.push('/')
     })
-  }, [id])
+  }, [paramSlug])
 
   useEffect(() => {
     if (hymn !== undefined) {
@@ -97,7 +107,7 @@ const ViewHymnPage = () => {
       {
         isLoggedIn(globalState)?(
           <div id={"editDiv"} className={classes.editDiv}>
-            <Button variant={"contained"} onClick={()=>{history.push(`/edit/${id}`)}}>Edit</Button>
+            <Button variant={"contained"} onClick={()=>{history.push(`/edit/${hymn.id}`)}}>Edit</Button>
           </div>
         ):null
       }
