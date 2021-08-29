@@ -46,6 +46,7 @@ const AppNavDrawer = (props)=>{
         for (let key of Object.keys(categoryMap)) {
           tmpArr.push({
             categoryName: categoryMap[key].categoryName,
+            categorySlug:categoryMap[key].categorySlug,
             id: key
           })
         }
@@ -97,7 +98,7 @@ const AppNavDrawer = (props)=>{
           {hymnCategoryList.length>0?(<Divider/>):null}
           {hymnCategoryList.length>0?(hymnCategoryList.map((category)=>{
             return(
-              <ListItemLink key={category.id} to={`/category/${category.id}`} onClick={closeDrawer}>
+              <ListItemLink key={category.id} to={`/category/${category.categorySlug}`} onClick={closeDrawer}>
                 <ListItemText primary={category.categoryName}/>
               </ListItemLink>
               )

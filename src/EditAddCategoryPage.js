@@ -17,6 +17,7 @@ import {
   Typography, useMediaQuery
 } from "@material-ui/core";
 import {generateID, isLoggedOut} from "./utils";
+import slugify from "slugify";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -100,7 +101,10 @@ const EditAddCategoryPage = (props) => {
           const ref = db.collection('hymnCategory').doc('categories')
           let tmpMap = {}
           const newID = generateID()
+          let hymnCategorySlug = slugify(hymnCategoryName, {strict: true})
+          hymnCategorySlug = hymnCategorySlug+"-"+ newID.slice(-6)
           tmpMap[`categoryMap.${newID}.categoryName`] = hymnCategoryName
+          tmpMap[`categoryMap.${newID}.categorySlug`] = hymnCategorySlug
           tmpMap[`categoryMap.${newID}.categoryContent`] = []
           transaction_ref.update(ref, tmpMap)
           await transaction_ref.commit(tmpMap)
@@ -111,8 +115,11 @@ const EditAddCategoryPage = (props) => {
       } else if (mode === "edit") {
         try {
           const ref = db.collection('hymnCategory').doc('categories')
+          let hymnCategorySlug = slugify(hymnCategoryName, {strict: true})
+          hymnCategorySlug = hymnCategorySlug+"-"+ ref.id.slice(-6)
           let tmpMap = {}
           tmpMap[`categoryMap.${id}.categoryName`] = hymnCategoryName
+          tmpMap[`categoryMap.${id}.categorySlug`] = hymnCategorySlug
           transaction_ref.update(ref, tmpMap)
           await transaction_ref.commit(tmpMap)
         } catch (e) {

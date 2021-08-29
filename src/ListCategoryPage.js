@@ -55,6 +55,7 @@ const ListCategoryPage = (props)=>{
       for(let key of Object.keys(categoryMap)) {
           tmpArr.push({
             categoryName:categoryMap[key].categoryName,
+            categorySlug:categoryMap[key].categorySlug,
             id:key
           })
       }
@@ -78,7 +79,7 @@ const ListCategoryPage = (props)=>{
         <List className={classes.list}>
           {hymnCategoryList.map((item,index) => (
               <div key={item.id}>
-                <ListItem button divider={hymnCategoryList[index+1]!== undefined} onClick={()=>{history.push(`/category/${item.id}`)}}>
+                <ListItem button divider={hymnCategoryList[index+1]!== undefined} onClick={()=>{history.push(`/category/${item.categorySlug}`)}}>
                   <ListItemText primary={item.categoryName}/>
                   {
                     isLoggedIn(globalState)?(

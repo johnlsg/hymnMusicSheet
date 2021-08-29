@@ -55,14 +55,24 @@ function ListHymnPage(props) {
     const fetchHymns = async () => {
       let querySnapshot
       let tmpArr = []
+      // filterCategory is the slug of the category
       if (!!filterCategory) {
         let categoryMap = (await db.collection("hymnCategory").doc('categories').get()).data().categoryMap
-        if (categoryMap[filterCategory] === undefined) {
+        let found = false
+        let foundID = ""
+        for (let categoryID of Object.keys(categoryMap)){
+          if(categoryMap[categoryID].categorySlug === filterCategory){
+            found = true
+            foundID = categoryID
+            break
+          }
+        }
+        if (categoryMap[foundID] === undefined) {
           history.push('/')
         } else {
-          setCategoryName(categoryMap[filterCategory].categoryName)
+          setCategoryName(categoryMap[foundID].categoryName)
         }
-        categoryMap[filterCategory].categoryContent.forEach((hymn) => {
+        categoryMap[foundID].categoryContent.forEach((hymn) => {
           tmpArr.push({
             id:hymn.hymnID,
             name: hymn.hymnName,

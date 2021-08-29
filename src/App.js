@@ -172,7 +172,7 @@ function App() {
                   <AuthPage/>
                 </Route>
                 <Route path="/version">
-                  Release 1605 8Aug21
+                  Release 1307 29Aug21
                 </Route>
                 <Route path="/migrate">
                   <DBMigration/>
