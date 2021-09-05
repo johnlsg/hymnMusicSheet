@@ -104,7 +104,8 @@ function App() {
       // return ()=>{
       //   console.log('unregister')
       //   unregisterAuthStateListener()
-      // }
+
+      firebase.analytics().logEvent('page_load')
     }, []
   )
 
