@@ -173,7 +173,7 @@ function App() {
                   <AuthPage/>
                 </Route>
                 <Route path="/version">
-                  Release 1307 29Aug21
+                  Release 1015 15Jan22
                 </Route>
                 <Route path="/migrate">
                   <DBMigration/>
@@ -185,7 +185,7 @@ function App() {
             </div>
             <div className={classes.footer}>
               <Typography>
-                © 2021 Hymn Sheet Music. All rights reserved.
+                © 2021-2022 Hymn Sheet Music. All rights reserved.
               </Typography>
             </div>
           </div>
