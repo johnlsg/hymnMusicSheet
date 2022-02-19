@@ -32,12 +32,12 @@ const AuthPage = (props) => {
 
       let ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(firebase.auth());
       ui.start('#firebaseui-auth-container', {
-        signInOptions: {
+        signInOptions: [{
 
           provider:firebase.auth.EmailAuthProvider.PROVIDER_ID,
           disableSignUp: {status: true, adminEmail: "esmondelwc@gmail.com", helpLink: "New user registration is disabled"}
 
-        },
+        }],
         signInSuccessUrl: "/",
       });
       return ()=>{unregisterAuthStateListener()}
