@@ -17,13 +17,14 @@ const AuthPage = (props) => {
   useEffect(() => {
       const unregisterAuthStateListener = firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
+          //console.log(user + " has logged in")
           setGlobalState({
             user:user
           })
         } else {
           // User is signed out.
           setGlobalState({
-            user:undefined
+            user: "logged out"
           })
         }
       }, function (error) {
@@ -35,7 +36,11 @@ const AuthPage = (props) => {
         signInOptions: [{
 
           provider:firebase.auth.EmailAuthProvider.PROVIDER_ID,
-          disableSignUp: {status: true, adminEmail: "esmondelwc@gmail.com", helpLink: "New user registration is disabled"}
+          disableSignUp: {
+            status: true,
+            adminEmail: "esmondelwc@gmail.com",
+            helpLink: "Registration for normal user is disabled and not required, it is used for administration purpose only"
+          }
 
         }],
         signInSuccessUrl: "/",

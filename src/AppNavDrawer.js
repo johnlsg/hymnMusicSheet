@@ -82,8 +82,11 @@ const AppNavDrawer = (props)=>{
           <ListItemLink to="/" onClick={closeDrawer}>
             <ListItemText primary="Home"/>
           </ListItemLink>
+          <ListItemLink to="/search" onClick={closeDrawer}>
+            <ListItemText primary="Search"/>
+          </ListItemLink>
           {
-            isLoggedIn(globalState)?(
+            isLoggedIn(globalState) ? (
               <React.Fragment>
                 <Divider/>
                 <ListItemLink to="/add" onClick={closeDrawer}>

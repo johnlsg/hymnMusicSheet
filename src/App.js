@@ -1,6 +1,6 @@
 import './App.css';
 import {Route, Switch, useHistory} from "react-router-dom";
-import {Button, IconButton} from "@material-ui/core";
+import {Button, IconButton, styled, TextField} from "@material-ui/core";
 import AppBar from '@material-ui/core/AppBar';
 import MenuIcon from "@material-ui/icons/Menu";
 import Typography from "@material-ui/core/Typography";
@@ -23,16 +23,17 @@ import store from "./store";
 import ListHymnPage from "./ListHymnPage";
 import "@fontsource/source-serif-pro";
 import DBMigration from "./DBMigration";
+import SearchPage from "./SearchPage";
 
 const useStyles = makeStyles((theme) => ({
-    appBar: {
-      display: "flex"
-    },
-    menuButton: {
-      marginRight: theme.spacing(2),
-    },
-    title: {
-      cursor: "pointer"
+  appBar: {
+    display: "flex"
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    cursor: "pointer"
     },
     spacer: {
       flexGrow: 1,
@@ -65,6 +66,7 @@ function App() {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [globalState, setGlobalState] = useState(initialGlobalState)
+
   const openDrawer = () => {
     setDrawerOpen(true)
   }
@@ -109,6 +111,7 @@ function App() {
     }, []
   )
 
+
   return (
     <React.Fragment>
       <Provider store={store}>
@@ -126,6 +129,8 @@ function App() {
                 }}>
                   Hymn Music Sheet
                 </Typography>
+
+
                 <div className={classes.spacer}></div>
                 {isLoggedIn(globalState) ? (
                   <Button color="inherit" onClick={handleLogoutBtn}>Sign Out</Button>
@@ -172,8 +177,11 @@ function App() {
                 <Route path="/login">
                   <AuthPage/>
                 </Route>
+                <Route path="/search">
+                  <SearchPage/>
+                </Route>
                 <Route path="/version">
-                  Release 1554 19Feb22
+                  Release 1738 13Oct22
                 </Route>
                 <Route path="/migrate">
                   <DBMigration/>

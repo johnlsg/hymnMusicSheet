@@ -1,4 +1,5 @@
 export const isLoggedIn = (globalState)=>{
+  //console.log("auth state user is: "+globalState.user)
   return globalState.user !== "logged out" && globalState.user !== "loading"
 }
 
