@@ -181,7 +181,7 @@ function App() {
                   <SearchPage/>
                 </Route>
                 <Route path="/version">
-                  Release 1738 13Oct22
+                  Release 0114 15Oct22
                 </Route>
                 <Route path="/migrate">
                   <DBMigration/>
