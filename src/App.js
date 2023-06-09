@@ -193,7 +193,7 @@ function App() {
             </div>
             <div className={classes.footer}>
               <Typography>
-                © 2021-2022 Hymn Sheet Music. All rights reserved.
+                © 2021-{new Date().getFullYear()} Hymn Sheet Music. All rights reserved.
               </Typography>
             </div>
           </div>
